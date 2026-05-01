@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>🌶️ Host Playlist & Cheat Sheet · Caitlyn's Trivia</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=Bebas+Neue&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #0a0224;
+    color: #fff8e7;
+    line-height: 1.5;
+    padding: 20px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  h1 {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 26px;
+    color: #ffe600;
+    text-shadow: 3px 3px 0 #fa243c;
+    text-align: center;
+    margin-bottom: 8px;
+    letter-spacing: 2px;
+  }
+  .subtitle {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    color: #00f0ff;
+    text-align: center;
+    letter-spacing: 4px;
+    margin-bottom: 6px;
+  }
+  .meta {
+    text-align: center;
+    color: rgba(255, 248, 231, 0.55);
+    font-size: 14px;
+    margin-bottom: 30px;
+  }
+  .meta a { color: #00f0ff; text-decoration: none; }
+  .meta a:hover { text-decoration: underline; }
+
+  .toc {
+    background: rgba(255, 230, 0, 0.08);
+    border: 2px solid #ffe600;
+    border-radius: 8px;
+    padding: 14px 20px;
+    margin-bottom: 30px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px 24px;
+  }
+  .toc h2 {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 12px;
+    color: #ffe600;
+    grid-column: 1 / -1;
+    margin-bottom: 6px;
+  }
+  .toc a {
+    color: #fff8e7;
+    text-decoration: none;
+    font-size: 14px;
+    padding: 4px 0;
+    border-bottom: 1px dashed rgba(255, 230, 0, 0.2);
+  }
+  .toc a:hover { color: #ffe600; }
+
+  .timing-box {
+    background: rgba(250, 36, 60, 0.12);
+    border-left: 4px solid #fa243c;
+    padding: 16px 22px;
+    margin-bottom: 30px;
+    border-radius: 4px;
+  }
+  .timing-box h2 {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 14px;
+    color: #fa243c;
+    margin-bottom: 10px;
+    letter-spacing: 1px;
+  }
+  .timing-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 0;
+    border-bottom: 1px dashed rgba(255, 248, 231, 0.15);
+    font-size: 14px;
+  }
+  .timing-row:last-of-type { border-bottom: none; font-weight: 700; color: #ffe600; }
+
+  h2.round-title {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 18px;
+    color: #ff2d92;
+    text-shadow: 2px 2px 0 #000;
+    margin: 36px 0 6px;
+    letter-spacing: 2px;
+    padding-top: 16px;
+    border-top: 3px solid #ff2d92;
+  }
+  .round-meta {
+    color: #00f0ff;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    letter-spacing: 2px;
+    margin-bottom: 16px;
+  }
+
+  .song-card, .qa-card {
+    background: rgba(0, 0, 0, 0.45);
+    border: 2px solid rgba(0, 240, 255, 0.3);
+    border-radius: 6px;
+    padding: 14px 18px;
+    margin-bottom: 10px;
+    page-break-inside: avoid;
+  }
+  .song-card .num, .qa-card .num {
+    display: inline-block;
+    width: 36px;
+    height: 36px;
+    line-height: 36px;
+    text-align: center;
+    background: #ffe600;
+    color: #0a0224;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 14px;
+    border-radius: 4px;
+    margin-right: 12px;
+    vertical-align: middle;
+  }
+  .song-card .meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+    margin-top: 8px;
+    font-size: 14px;
+  }
+  .song-card .meta-row span {
+    color: rgba(255, 248, 231, 0.7);
+  }
+  .song-card .meta-row strong { color: #fff8e7; }
+  .song-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 1.5px;
+    display: inline-block;
+    vertical-align: middle;
+  }
+  .song-title .artist { color: #00f0ff; }
+  .song-title .arrow { color: rgba(255, 248, 231, 0.4); margin: 0 6px; }
+  .song-title .track { color: #ffe600; font-weight: 700; }
+
+  .lyric, .question {
+    font-style: italic;
+    color: rgba(255, 248, 231, 0.85);
+    margin: 6px 0 6px 48px;
+    font-size: 15px;
+  }
+  .answer-row {
+    margin-left: 48px;
+    margin-top: 4px;
+    font-size: 15px;
+  }
+  .answer-row .label {
+    color: #39ff14;
+    font-weight: 700;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 11px;
+    letter-spacing: 1px;
+    margin-right: 8px;
+  }
+  .clip-row {
+    margin-left: 48px;
+    margin-top: 4px;
+    font-size: 13px;
+    color: rgba(255, 248, 231, 0.65);
+  }
+  .clip-row .label {
+    color: #fa243c;
+    font-weight: 700;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    margin-right: 8px;
+  }
+
+  .am-link {
+    display: inline-block;
+    background: linear-gradient(135deg, #fa243c, #ff5773);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 13px;
+    margin-left: 12px;
+    font-weight: 600;
+  }
+  .am-link::before { content: "♫ "; }
+  .am-link:hover { background: white; color: #fa243c; }
+
+  .qa-card .question {
+    margin-left: 48px;
+    font-style: normal;
+    color: #fff8e7;
+    font-weight: 600;
+    font-size: 15px;
+  }
+
+  .points-pill {
+    display: inline-block;
+    background: rgba(57, 255, 20, 0.18);
+    color: #39ff14;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 12px;
+    font-weight: 700;
+    margin-left: 8px;
+  }
+
+  .scoring {
+    background: rgba(0, 240, 255, 0.08);
+    border: 2px dashed #00f0ff;
+    border-radius: 6px;
+    padding: 16px 22px;
+    margin: 24px 0;
+  }
+  .scoring h3 {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 12px;
+    color: #00f0ff;
+    margin-bottom: 8px;
+    letter-spacing: 1px;
+  }
+
+  .footer {
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 2px solid rgba(255, 248, 231, 0.15);
+    text-align: center;
+    color: rgba(255, 248, 231, 0.5);
+    font-size: 13px;
+  }
+  .footer a { color: #ffe600; }
+
+  /* Print styles */
+  @media print {
+    body { background: white; color: black; padding: 8px; max-width: none; }
+    .am-link { background: #fa243c !important; color: white !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .song-card, .qa-card { background: white; border: 1px solid #ccc; padding: 8px 12px; margin-bottom: 6px; }
+    h1 { color: black !important; text-shadow: none; }
+    h2.round-title { color: black !important; text-shadow: none; border-color: black; }
+    .subtitle, .round-meta { color: #666; }
+    .song-title .artist { color: #066; }
+    .song-title .track { color: #c30; }
+    .lyric, .question { color: #333; }
+    .answer-row { color: #060; }
+    .clip-row { color: #555; }
+    .toc, .timing-box, .scoring { background: #f4f4f4 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+
+<h1>🌶️ HOST CHEAT SHEET</h1>
+<div class="subtitle">CAITLYN'S 80s/90s THROWBACK TRIVIA</div>
+<div class="meta">
+  Saturday, May 2 · Wilson Residence · 5:00–9:00pm<br/>
+  Live game: <a href="https://jaywilson290-prog.github.io/caitlyn-trivia/">jaywilson290-prog.github.io/caitlyn-trivia</a>
+</div>
+
+<div class="toc">
+  <h2>★ TABLE OF CONTENTS ★</h2>
+  <a href="#timing">⏱ Show Timing &amp; Flow</a>
+  <a href="#scoring">📊 Scoring Rules</a>
+  <a href="#round1">🎵 Round 1 — Name That Song (10 × 2pt)</a>
+  <a href="#round2">🎤 Round 2 — Finish the Lyric (8 × 2pt)</a>
+  <a href="#round3">📺 Round 3 — Friends + 90s TV/Movies (13)</a>
+  <a href="#round4">⚡ Round 4 — Rapid Fire (8 × 1pt)</a>
+  <a href="#round5">🎧 Round 5 — Who Am I? (8 × 2pt)</a>
+  <a href="#round6">🏆 Final Five (5 × 4pt)</a>
+</div>
+
+<div id="timing" class="timing-box">
+  <h2>⏱ SHOW TIMING & FLOW (~60 min)</h2>
+  <div class="timing-row"><span>Splash + intro + welcome teams</span><strong>5 min</strong></div>
+  <div class="timing-row"><span>Round 1 — Name That Song (10 × ~45s incl. clip)</span><strong>~10 min</strong></div>
+  <div class="timing-row"><span>Round 2 — Finish the Lyric (8 × ~30s)</span><strong>~5 min</strong></div>
+  <div class="timing-row"><span>Round 3 — Friends + 90s TV/Movies (13 × ~30s)</span><strong>~7 min</strong></div>
+  <div class="timing-row"><span>Round 4 — Rapid Fire (8 × ~15s)</span><strong>~3 min</strong></div>
+  <div class="timing-row"><span>Round 5 — Who Am I? (8 × ~30s)</span><strong>~5 min</strong></div>
+  <div class="timing-row"><span>Final Five (5 × ~45s) + winner reveal + confetti</span><strong>~6 min</strong></div>
+  <div class="timing-row"><span>Buffer between rounds + score arguments + marg refills</span><strong>~10 min</strong></div>
+  <div class="timing-row"><span>TOTAL</span><strong>~50–60 min</strong></div>
+</div>
+
+<div id="scoring" class="scoring">
+  <h3>📊 SCORING — IT'S ALL IN THE GAME ALREADY</h3>
+  <p><strong>The browser tracks scores.</strong> Just click <span style="color:#39ff14">+1</span> / <span style="color:#39ff14">+2</span> / <span style="color:#ff2d92">−1</span> on each team card as answers come in. Leader gets 👑 + gold glow automatically. Reveal answers with <kbd>SPACE</kbd>, navigate with <kbd>← →</kbd>.</p>
+  <p style="margin-top:8px;"><strong>Round 1, 2, 5</strong> = 2 pts each. <strong>Round 3</strong> mostly 1 pt, two starred 2pt questions. <strong>Round 4</strong> = 1 pt. <strong>Final Five</strong> = 4 pts each (DOUBLE STAKES).</p>
+</div>
+
+<!-- ─────────────────────────────────────────────────────────── -->
+
+<h2 id="round1" class="round-title">🎵 ROUND 1 — NAME THAT SONG</h2>
+<div class="round-meta">★ 10 questions · 2 pts each · play 15–20 sec clip ★</div>
+
+<!-- Songs in order. Apple Music links + clip start tips. -->
+<!-- Q1 -->
+<div class="song-card">
+  <span class="num">1</span>
+  <span class="song-title"><span class="artist">Sublime</span><span class="arrow">→</span><span class="track">Santeria</span></span>
+  <a class="am-link" target="_blank" href="https://music.apple.com/us/search?term=Sublime%20Santeria">Apple Music</a>
+  <div class="lyric">"My soul keeps on burnin' for the love of my life… my heina…"</div>
+  <div class="clip-row"><span class="label">CLIP</span> Best to play <strong>1:08–1:25</strong> (verse "I had a million dollars but I, I'd spent it all" — avoids the title chorus).</div>
+</div>
+
+<!-- Q2 -->
+<div class="song-card">
+  <span class="num">2</span>
+  <span class="song-title"><span class="artist">Semisonic</span><span class="arrow">→</span><span class="track">Closing Time</span></span>
+  <a class="am-link" target="_blank" href="https://music.apple.com/us/search?term=Semisonic%20Closing%20Time">Apple Music</a>
+  <div class="lyric">"Every new beginning comes from some other beginning's end…"</div>
+  <div class="clip-row"><span class="label">CLIP</span> Play <strong>0:00–0:18</strong> — iconic piano intro before the chorus title hits.</div>
+</div>
+
+<!-- Q3 -->
+<div class="song-card">
+  <span class="num">3</span>
+  <span class="song-title"><span class="artist">Skee-Lo</span><span class="arrow">→</span><span class="track">I Wish</span></span>
+  <a class="am-link" target="_blank" href="https://music.apple.com/us/search?term=Skee-Lo%20I%20Wish">Apple Music</a>
+  <div class="lyric">"See, I'd dunk it from the free-throw line, with authority…"</div>
+  <div class="clip-row"><span class="label">CLIP</span> Play <strong>0:35–0:52</strong> — basketball verse (skips the "I wish" hook).</div>
+</div>
+
+<!-- Q4 -->
+<div class="song-card">
+  <span class="num">4</span>
+  <span class="song-title"><span class="artist">New Radicals</span><span class="arrow">→</span><span class="track">You Get What You Give</span></span>
+  <a class="am-link" target="_blank" href="https://music.apple.com/us/search?term=New%20Radicals%20You%20Get%20What%20You%20Give">Apple Music</a>
+  <div class="lyric">"Don't let go, you've got the music in you, one dance left…"</div>
+  <div class="clip-row"><span class="label">CLIP</span> Play <strong>0:25–0:42</strong> — the verse before the title chorus.</div>
+</div>
+
+<!-- Q5 -->
+<div class="song-card">
+  <span class="num">5</span>
+  <span class="song-title"><span class="artist">The Verve</span><span class="arrow">→</span><span class="track">Bittersweet Symphony</span></span>
+  <a class="am-link" target="_blank" href="https://music.apple.com/us/search?term=The%20Verve%20Bittersweet%20Symphony">Apple Music</a>
+  <div class="lyric">"I'm a million different people from one day to the next…"</div>
+  <div class="clip-row"><span class="label">CLIP</span> Play <strong>0:00–0:25</strong> — iconic strings intro, no vocals (clean, no giveaway).</div>
+</div>
+
+<!-- Q6 -->
+<div class="song-card">
+  <span class="num">6</span>
+  <span class="song-title"><span class="artist">Seal</span><span class="arrow">→</span><span class="track">Fly Like an Eagle</span></span>
+  <a class="am-link" target="_blank" href="https://music.apple.com/us/search?term=Seal%20Fly%20Like%20an%20Eagle%20Space%20Jam">Apple Music</a>
+  <div class="lyric">"Time keeps on slippin', slippin', slippin' into the future…"</div>
+  <div class="clip-row"><span class="label">CLIP</span> The 90s remake from <em>Space Jam</em> soundtrack. Play <strong>0:25–0:45</strong> — Seal's vocals on the "tick tock" verse.</div>
+</div>
+
+<!-- Q7 -->
+<div class="song-card">
+  <span class="num">7</span>
+  <span class="song-title"><span class="artist">Mark Morrison</span><span class="arrow">→</span><span class="track">Return of the Mack</span></span>
+  <a class="am-link" target="_blank" href="https://music.apple.com/us/search?term=Mark%20Morrison%20Return%20of%20the%20Mack">Apple Music</a>
+  <div class="lyric">"You lied to me — all those times I said that I love you…"</div>
+  <div class="clip-row"><span class="label">CLIP</span> Play <strong>0:10–0:30</strong> — bassline kick-in into the verse.</div>
+</div>
+
+<!-- Q8 -->
+<div class="song-card">
+  <span class="num">8</span>
+  <span class="song-title"><span class="artist">Linkin Park</span><span class="arrow">→</span><span class="track">In the End</span></span>
+  <a class="am-link" target="_blank" href="https://music.apple.com/us/search?term=Linkin%20Park%20In%20the%20End">Apple Music</a>
+  <div class="lyric">"I tried so hard and got so far, but in the end it doesn't even matter…"</div>
+  <div class="clip-row"><span class="label">CLIP</span> Play <strong>0:00–0:18</strong> — iconic piano intro (no title spoiler).</div>
+</div>
+
+<!-- Q9 -->
+<div class="song-card">
+  <span class="num">9</span>
+  <span class="song-title"><span class="artist">Soundgarden</span><span class="arrow">→</span><span class="track">Black Hole Sun</span></span>
+  <a class="am-link" target="_blank" href="https://music.apple.com/us/search?term=Soundgarden%20Black%20Hole%20Sun">Apple Music</a>
+  <div class="lyric">"In my eyes, indisposed, in disguises no one knows…"</div>
+  <div class="clip-row"><span class="label">CLIP</span> Play <strong>0:00–0:25</strong> — psychedelic intro guitar before any chorus.</div>
+</div>
+
+<!-- Q10 -->
+<div class="song-card">
+  <span class="num">10</span>
+  <span class="song-title"><span class="artist">Len</span><span class="arrow">→</span><span class="track">Steal My Sunshine</span></span>
+  <a class="am-link" target="_blank" href="https://music.apple.com/us/search?term=Len%20Steal%20My%20Sunshine">Apple Music</a>
+  <div class="lyric">"Flippin' and a-twistin', she's invitin' me to give it a kiss…"</div>
+  <div class="clip-row"><span class="label">CLIP</span> Play <strong>0:00–0:18</strong> — chill summer beat intro before the title.</div>
+</div>
+
+<!-- ─────────────────────────────────────────────────────────── -->
+
+<h2 id="round2" class="round-title">🎤 ROUND 2 — FINISH THE LYRIC</h2>
+<div class="round-meta">★ 8 questions · 2 pts each · read aloud · play song AFTER reveal as a vibe ★</div>
+
+<div class="song-card">
+  <span class="num">1</span>
+  <span class="song-title"><span class="artist">Christina Aguilera</span><span class="arrow">→</span><span class="track">Genie in a Bottle</span></span>
+  <a class="am-link" target="_blank" href="https://music.apple.com/us/search?term=Christina%20Aguilera%20Genie%20in%20a%20Bottle">Apple Music</a>
+  <div class="lyric"><strong>READ:</strong> "I'm a genie in a bottle…"</div>
+  <div class="answer-row"><span class="label">ANSWER</span>"…you gotta rub me the right way"</div>
+</div>
+
+<div class="song-card">
+  <span class="num">2</span>
+  <span class="song-title"><span class="artist">Blackstreet</span><span class="arrow">→</span><span class="track">No Diggity</span></span>
+  <a class="am-link" target="_blank" href="https://music.apple.com/us/search?term=Blackstreet%20No%20Diggity">Apple Music</a>
+  <div class="lyric"><strong>READ:</strong> "No diggity…"</div>
+  <div class="answer-row"><span class="label">ANSWER</span>"…I like the way you work it"</div>
+</div>
+
+<div class="song-card">
+  <span class="num">3</span>
+  <span class="song-title"><span class="artist">Chumbawamba</span><span class="arrow">→</span><span class="track">Tubthumping</span></span>
+  <a class="am-link" target="_blank" href="https://music.apple.com/us/search?term=Chumbawamba%20Tubthumping">Apple Music</a>
+  <div class="lyric"><strong>READ:</strong> "I get knocked down…"</div>
+  <div class="answer-row"><span class="label">ANSWER</span>"…but I get up again"</div>
+</div>
+
+<div class="song-card">
+  <span class="num">4</span>
+  <span class="song-title"><span class="artist">Alanis Morissette</span><span class="arrow">→</span><span class="track">You Oughta Know</span></span>
+  <a class="am-link" target="_blank" href="https://music.apple.com/us/search?term=Alanis%20Morissette%20You%20Oughta%20Know">Apple Music</a>
+  <div class="lyric"><strong>READ:</strong> "You oughta know…"</div>
+  <div class="answer-row"><span class="label">ANSWER</span>"…that I'm here to remind you"</div>
+</div>
+
+<div class="song-card">
+  <span class="num">5</span>
+  <span class="song-title"><span class="artist">Weezer</span><span class="arrow">→</span><span class="track">Say It Ain't So</span></span>
+  <a class="am-link" target="_blank" href="https://music.apple.com/us/search?term=Weezer%20Say%20It%20Ain%27t%20So">Apple Music</a>
+  <div class="lyric"><strong>READ:</strong> "Say it ain't so…"</div>
+  <div class="answer-row"><span class="label">ANSWER</span>"…I will not go"</div>
+</div>
+
+<div class="song-card">
+  <span class="num">6</span>
+  <span class="song-title"><span class="artist">Shaggy</span><span class="arrow">→</span><span class="track">It Wasn't Me</span></span>
+  <a class="am-link" target="_blank" href="https://music.apple.com/us/search?term=Shaggy%20It%20Wasn%27t%20Me">Apple Music</a>
+  <div class="lyric"><strong>READ:</strong> "It wasn't me…"</div>
+  <div class="answer-row"><span class="label">ANSWER</span>"…caught me on the counter"</div>
+</div>
+
+<div class="song-card">
+  <span class="num">7</span>
+  <span class="song-title"><span class="artist">Smash Mouth</span><span class="arrow">→</span><span class="track">All Star</span></span>
+  <a class="am-link" target="_blank" href="https://music.apple.com/us/search?term=Smash%20Mouth%20All%20Star">Apple Music</a>
+  <div class="lyric"><strong>READ:</strong> "All star…"</div>
+  <div class="answer-row"><span class="label">ANSWER</span>"…hey now, you're an all star"</div>
+</div>
+
+<div class="song-card">
+  <span class="num">8</span>
+  <span class="song-title"><span class="artist">Notorious B.I.G.</span><span class="arrow">→</span><span class="track">Mo Money Mo Problems</span></span>
+  <a class="am-link" target="_blank" href="https://music.apple.com/us/search?term=Notorious%20BIG%20Mo%20Money%20Mo%20Problems">Apple Music</a>
+  <div class="lyric"><strong>READ:</strong> "Mo money…"</div>
+  <div class="answer-row"><span class="label">ANSWER</span>"…mo problems"</div>
+</div>
+
+<!-- ─────────────────────────────────────────────────────────── -->
+
+<h2 id="round3" class="round-title">📺 ROUND 3 — FRIENDS + 90s TV/MOVIES</h2>
+<div class="round-meta">★ 13 questions · mostly 1 pt · two ★ marked are 2 pts ★</div>
+
+<div class="qa-card">
+  <span class="num">1</span> <strong>Q:</strong> What is Chandler Bing's job? <span class="points-pill">2 PT ★</span>
+  <div class="answer-row"><span class="label">A</span>Statistical Analysis &amp; Data Reconfiguration ('transponster' it is NOT)</div>
+</div>
+<div class="qa-card">
+  <span class="num">2</span> <strong>Q:</strong> What is the name of Ross's second wife? <span class="points-pill">1 PT</span>
+  <div class="answer-row"><span class="label">A</span>Emily</div>
+</div>
+<div class="qa-card">
+  <span class="num">3</span> <strong>Q:</strong> What fruit lime is Ross deathly allergic to in Season 9? <span class="points-pill">1 PT</span>
+  <div class="answer-row"><span class="label">A</span>Kiwi (in a kiwi-lime pie Phoebe baked)</div>
+</div>
+<div class="qa-card">
+  <span class="num">4</span> <strong>Q:</strong> What is Joey's soap-opera character's name? <span class="points-pill">1 PT</span>
+  <div class="answer-row"><span class="label">A</span>Dr. Drake Ramoray</div>
+</div>
+<div class="qa-card">
+  <span class="num">5</span> <strong>Q:</strong> What is the apartment number Monica &amp; Rachel live in (after the writers fixed it)? <span class="points-pill">1 PT</span>
+  <div class="answer-row"><span class="label">A</span>Apartment 20</div>
+</div>
+<div class="qa-card">
+  <span class="num">6</span> <strong>Q:</strong> What song do Ross &amp; Monica dance "The Routine" to at Dick Clark's New Year's Rockin' Eve audition? <span class="points-pill">2 PT ★</span>
+  <div class="answer-row"><span class="label">A</span>"Got to Be Real" — Cheryl Lynn</div>
+</div>
+<div class="qa-card">
+  <span class="num">7</span> <strong>Q:</strong> What is the name of Phoebe's identical twin sister? <span class="points-pill">1 PT</span>
+  <div class="answer-row"><span class="label">A</span>Ursula Buffay</div>
+</div>
+<div class="qa-card">
+  <span class="num">8</span> <strong>Q:</strong> What is Gunther's actual job at Central Perk? <span class="points-pill">1 PT</span>
+  <div class="answer-row"><span class="label">A</span>Manager (he started as a barista)</div>
+</div>
+<div class="qa-card">
+  <span class="num">9</span> <strong>Q:</strong> What is the name of Joey's stuffed penguin? <span class="points-pill">2 PT ★</span>
+  <div class="answer-row"><span class="label">A</span>Hugsy</div>
+</div>
+<div class="qa-card">
+  <span class="num">10</span> <strong>Q:</strong> Who finally pees on Monica after she's stung by a jellyfish? <span class="points-pill">1 PT</span>
+  <div class="answer-row"><span class="label">A</span>Chandler (Joey tries first but freezes up)</div>
+</div>
+<div class="qa-card">
+  <span class="num">11</span> <strong>Q:</strong> What year did Jurassic Park first hit theaters? <span class="points-pill">1 PT</span>
+  <div class="answer-row"><span class="label">A</span>1993</div>
+</div>
+<div class="qa-card">
+  <span class="num">12</span> <strong>Q:</strong> Who directed Titanic (1997)? <span class="points-pill">1 PT</span>
+  <div class="answer-row"><span class="label">A</span>James Cameron</div>
+</div>
+<div class="qa-card">
+  <span class="num">13</span> <strong>Q:</strong> In Toy Story (1995), what is Buzz Lightyear's catchphrase? <span class="points-pill">1 PT</span>
+  <div class="answer-row"><span class="label">A</span>"To Infinity… and Beyond!"</div>
+</div>
+
+<!-- ─────────────────────────────────────────────────────────── -->
+
+<h2 id="round4" class="round-title">⚡ ROUND 4 — RAPID FIRE DEEP CUTS</h2>
+<div class="round-meta">★ 8 questions · 1 pt each · move FAST ★</div>
+
+<div class="qa-card">
+  <span class="num">1</span> <strong>Q:</strong> What did 'AIM' stand for?
+  <div class="answer-row"><span class="label">A</span>AOL Instant Messenger</div>
+</div>
+<div class="qa-card">
+  <span class="num">2</span> <strong>Q:</strong> What Japanese company made the original Walkman?
+  <div class="answer-row"><span class="label">A</span>Sony</div>
+</div>
+<div class="qa-card">
+  <span class="num">3</span> <strong>Q:</strong> What does 'POG' stand for (the original juice the milk-cap craze was named after)?
+  <div class="answer-row"><span class="label">A</span>Passion Orange Guava</div>
+</div>
+<div class="qa-card">
+  <span class="num">4</span> <strong>Q:</strong> What was the iconic Windows XP wallpaper of rolling green hills called?
+  <div class="answer-row"><span class="label">A</span>"Bliss" (real photo, no Photoshop)</div>
+</div>
+<div class="qa-card">
+  <span class="num">5</span> <strong>Q:</strong> What two rappers defined the East Coast vs West Coast feud?
+  <div class="answer-row"><span class="label">A</span>The Notorious B.I.G. vs Tupac Shakur</div>
+</div>
+<div class="qa-card">
+  <span class="num">6</span> <strong>Q:</strong> What British band sang 'Wonderwall'?
+  <div class="answer-row"><span class="label">A</span>Oasis</div>
+</div>
+<div class="qa-card">
+  <span class="num">7</span> <strong>Q:</strong> What happened to a Tamagotchi if you neglected it?
+  <div class="answer-row"><span class="label">A</span>It died</div>
+</div>
+<div class="qa-card">
+  <span class="num">8</span> <strong>Q:</strong> What network aired Seinfeld for all 9 seasons?
+  <div class="answer-row"><span class="label">A</span>NBC</div>
+</div>
+
+<!-- ─────────────────────────────────────────────────────────── -->
+
+<h2 id="round5" class="round-title">🎧 ROUND 5 — WHO AM I?</h2>
+<div class="round-meta">★ 8 questions · 2 pts each · clue + artist ★</div>
+
+<div class="qa-card">
+  <span class="num">1</span> <strong>CLUE:</strong> Female artist · 90s · "Criminal" · controversial video
+  <div class="answer-row"><span class="label">A</span>Fiona Apple</div>
+</div>
+<div class="qa-card">
+  <span class="num">2</span> <strong>CLUE:</strong> Rapper · "Hypnotize" · East Coast legend
+  <div class="answer-row"><span class="label">A</span>The Notorious B.I.G.</div>
+</div>
+<div class="qa-card">
+  <span class="num">3</span> <strong>CLUE:</strong> Band · "1979" · alt rock
+  <div class="answer-row"><span class="label">A</span>The Smashing Pumpkins</div>
+</div>
+<div class="qa-card">
+  <span class="num">4</span> <strong>CLUE:</strong> Female trio · "Bills, Bills, Bills"
+  <div class="answer-row"><span class="label">A</span>Destiny's Child</div>
+</div>
+<div class="qa-card">
+  <span class="num">5</span> <strong>CLUE:</strong> Artist · "Kiss From a Rose"
+  <div class="answer-row"><span class="label">A</span>Seal</div>
+</div>
+<div class="qa-card">
+  <span class="num">6</span> <strong>CLUE:</strong> Band · "Losing My Religion"
+  <div class="answer-row"><span class="label">A</span>R.E.M.</div>
+</div>
+<div class="qa-card">
+  <span class="num">7</span> <strong>CLUE:</strong> Rapper · "Gin and Juice"
+  <div class="answer-row"><span class="label">A</span>Snoop Dogg</div>
+</div>
+<div class="qa-card">
+  <span class="num">8</span> <strong>CLUE:</strong> Band · "Creep" (NOT TLC)
+  <div class="answer-row"><span class="label">A</span>Radiohead</div>
+</div>
+
+<!-- ─────────────────────────────────────────────────────────── -->
+
+<h2 id="round6" class="round-title">🏆 THE FINAL FIVE</h2>
+<div class="round-meta">★ 5 questions · 4 pts each · DOUBLE STAKES · comeback round ★</div>
+
+<div class="qa-card">
+  <span class="num">1</span> <strong>Q:</strong> Name ALL 6 Friends characters (first names only). <span class="points-pill">4 PT</span>
+  <div class="answer-row"><span class="label">A</span>Ross, Rachel, Monica, Chandler, Joey, Phoebe</div>
+</div>
+<div class="qa-card">
+  <span class="num">2</span> <strong>Q:</strong> What movie features the line: "I'll never let go, Jack… I promise." <span class="points-pill">4 PT</span>
+  <div class="answer-row"><span class="label">A</span>Titanic (1997)</div>
+  <a class="am-link" target="_blank" href="https://music.apple.com/us/search?term=My%20Heart%20Will%20Go%20On%20Celine%20Dion">Apple Music — My Heart Will Go On</a>
+</div>
+<div class="qa-card">
+  <span class="num">3</span> <strong>Q:</strong> Name TWO members of *NSYNC. <span class="points-pill">4 PT</span>
+  <div class="answer-row"><span class="label">A</span>Justin Timberlake · JC Chasez · Joey Fatone · Lance Bass · Chris Kirkpatrick (any 2)</div>
+  <a class="am-link" target="_blank" href="https://music.apple.com/us/search?term=NSYNC%20Bye%20Bye%20Bye">Apple Music — Bye Bye Bye</a>
+</div>
+<div class="qa-card">
+  <span class="num">4</span> <strong>Q:</strong> What 1991 grunge album opens with "Smells Like Teen Spirit"? <span class="points-pill">4 PT</span>
+  <div class="answer-row"><span class="label">A</span>Nevermind — Nirvana</div>
+  <a class="am-link" target="_blank" href="https://music.apple.com/us/search?term=Nirvana%20Nevermind">Apple Music — Nevermind</a>
+</div>
+<div class="qa-card">
+  <span class="num">5</span> <strong>Q:</strong> What year did Friends premiere on NBC? <span class="points-pill">4 PT</span>
+  <div class="answer-row"><span class="label">A</span>1994 (September 22, 1994)</div>
+</div>
+
+<!-- ─────────────────────────────────────────────────────────── -->
+
+<div class="footer">
+  🌶️ Print this page · keep on the host stand · F11 the trivia game on the TV<br/>
+  <a href="https://jaywilson290-prog.github.io/caitlyn-trivia/">→ Open the live trivia game</a>
+</div>
+
+</body>
+</html>
