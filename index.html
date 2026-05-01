@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>🌶️ Caitlyn's Chili's Happy Hour 🌶️ 80s/90s Trivia · Bangers HQ</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --neon-pink: #ff2d92;
+    --neon-cyan: #00f0ff;
+    --neon-yellow: #ffe600;
+    --neon-purple: #b561ff;
+    --neon-green: #39ff14;
+    --chili-red: #d62828;
+    --chili-red-hot: #fa243c;
+    --bg-deep: #0a0224;
+    --bg-mid: #1a0838;
+    --bg-grid: rgba(181, 97, 255, 0.18);
+    --paper: #fff8e7;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    height: 100%;
+    background: var(--bg-deep);
+    color: white;
+    font-family: 'VT323', monospace;
+    overflow: hidden;
+  }
+
+  /* ─── Synthwave grid background ─── */
+  body::before {
+    content: "";
+    position: fixed; inset: 0;
+    background:
+      radial-gradient(ellipse at center, rgba(255, 45, 146, 0.18) 0%, transparent 60%),
+      linear-gradient(180deg, var(--bg-deep) 0%, var(--bg-mid) 100%);
+    z-index: -2;
+  }
+  body::after {
+    content: "";
+    position: fixed; inset: 0;
+    background-image:
+      linear-gradient(var(--bg-grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--bg-grid) 1px, transparent 1px);
+    background-size: 60px 60px;
+    transform: perspective(500px) rotateX(60deg) translateY(20vh) scale(2);
+    transform-origin: center top;
+    z-index: -1;
+    opacity: 0.55;
+  }
+
+  /* ─── HEADER ─── */
+  .top-bar {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 70px;
+    background: linear-gradient(90deg, rgba(255, 45, 146, 0.85), rgba(0, 240, 255, 0.85));
+    border-bottom: 4px solid var(--neon-yellow);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 28px;
+    z-index: 10;
+    box-shadow: 0 0 24px rgba(255, 45, 146, 0.5);
+  }
+  .top-bar h1 {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 17px;
+    color: var(--paper);
+    text-shadow: 3px 3px 0 #000, 0 0 12px var(--neon-yellow);
+    letter-spacing: 1px;
+  }
+  .top-bar h1 .pep {
+    font-family: sans-serif;
+    margin: 0 4px;
+  }
+  .round-badge {
+    background: black;
+    border: 3px solid var(--neon-yellow);
+    padding: 8px 18px;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 14px;
+    color: var(--neon-yellow);
+    text-shadow: 0 0 8px var(--neon-yellow);
+  }
+
+  /* ─── MAIN STAGE ─── */
+  .stage {
+    position: fixed;
+    top: 70px;
+    bottom: 200px;
+    left: 0; right: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 32px;
+    text-align: center;
+  }
+
+  .round-title {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 28px;
+    color: var(--neon-cyan);
+    text-shadow: 0 0 20px var(--neon-cyan), 4px 4px 0 #000;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+  }
+  .round-sub {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 26px;
+    color: var(--neon-pink);
+    text-shadow: 0 0 12px var(--neon-pink);
+    letter-spacing: 6px;
+    margin-bottom: 36px;
+  }
+
+  .q-counter {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 20px;
+    color: var(--neon-yellow);
+    margin-bottom: 18px;
+    text-shadow: 0 0 8px var(--neon-yellow);
+  }
+
+  .q-prompt {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 64px;
+    line-height: 1.05;
+    color: var(--paper);
+    text-shadow: 4px 4px 0 #000, 0 0 32px rgba(255, 230, 0, 0.6);
+    max-width: 1200px;
+    padding: 24px 36px;
+    background: rgba(0, 0, 0, 0.5);
+    border: 4px solid var(--neon-yellow);
+    border-radius: 6px;
+    margin-bottom: 28px;
+    letter-spacing: 1.2px;
+  }
+
+  .apple-music-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 14px;
+    padding: 14px 22px;
+    background: linear-gradient(135deg, #fa243c, #ff5773);
+    color: white;
+    border: 3px solid #fff;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-bottom: 18px;
+    text-decoration: none;
+    box-shadow: 0 0 16px rgba(250, 36, 60, 0.8);
+    text-shadow: 1px 1px 0 #000;
+    letter-spacing: 1px;
+    transition: transform 0.15s;
+  }
+  .apple-music-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 28px rgba(250, 36, 60, 1);
+  }
+  .apple-music-btn::before {
+    content: "♫";
+    font-size: 22px;
+    color: white;
+  }
+
+  .q-points {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 16px;
+    color: var(--neon-green);
+    text-shadow: 0 0 10px var(--neon-green);
+    margin-bottom: 18px;
+    letter-spacing: 2px;
+  }
+
+  .answer {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 56px;
+    color: var(--neon-green);
+    text-shadow: 4px 4px 0 #000, 0 0 28px var(--neon-green);
+    padding: 24px 48px;
+    background: rgba(57, 255, 20, 0.12);
+    border: 4px dashed var(--neon-green);
+    border-radius: 6px;
+    letter-spacing: 1.2px;
+    max-width: 1200px;
+    animation: pop 0.4s ease-out;
+  }
+  .answer.hidden { display: none; }
+  @keyframes pop {
+    0% { transform: scale(0.6); opacity: 0; }
+    60% { transform: scale(1.08); opacity: 1; }
+    100% { transform: scale(1); }
+  }
+
+  /* ─── TEAMS / SCOREBOARD ─── */
+  .scoreboard {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    height: 200px;
+    background: rgba(0, 0, 0, 0.78);
+    border-top: 4px solid var(--neon-pink);
+    box-shadow: 0 -4px 24px rgba(255, 45, 146, 0.4);
+    padding: 16px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
+    z-index: 8;
+  }
+  .scoreboard-title {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 13px;
+    color: var(--neon-yellow);
+    margin-bottom: 12px;
+    letter-spacing: 2px;
+  }
+  .team-row {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    margin-right: 18px;
+    padding: 10px 18px;
+    background: linear-gradient(180deg, rgba(255, 45, 146, 0.4), rgba(181, 97, 255, 0.4));
+    border: 3px solid var(--neon-cyan);
+    border-radius: 6px;
+    min-width: 180px;
+    box-shadow: 0 0 12px rgba(0, 240, 255, 0.6);
+  }
+  .team-row.leader {
+    border-color: var(--neon-yellow);
+    box-shadow: 0 0 20px var(--neon-yellow);
+    background: linear-gradient(180deg, rgba(255, 230, 0, 0.4), rgba(255, 45, 146, 0.4));
+  }
+  .team-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 26px;
+    color: var(--paper);
+    letter-spacing: 2px;
+    text-shadow: 2px 2px 0 #000;
+    cursor: pointer;
+    max-width: 280px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .team-row.leader .team-name {
+    color: var(--neon-yellow);
+    text-shadow: 0 0 14px var(--neon-yellow), 2px 2px 0 #000;
+  }
+  .team-score {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 28px;
+    color: var(--neon-green);
+    text-shadow: 0 0 10px var(--neon-green);
+    margin: 4px 0;
+  }
+  .team-controls {
+    display: flex;
+    gap: 6px;
+    margin-top: 4px;
+  }
+  .team-controls button {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 11px;
+    background: black;
+    color: var(--neon-cyan);
+    border: 2px solid var(--neon-cyan);
+    padding: 5px 9px;
+    cursor: pointer;
+    border-radius: 3px;
+  }
+  .team-controls button:hover {
+    background: var(--neon-cyan);
+    color: black;
+  }
+  .team-controls .minus { color: var(--neon-pink); border-color: var(--neon-pink); }
+  .team-controls .minus:hover { background: var(--neon-pink); color: black; }
+  .team-controls .remove { color: #999; border-color: #555; font-size: 9px; }
+
+  .add-team {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 18px;
+    background: rgba(0, 0, 0, 0.5);
+    border: 3px dashed var(--neon-yellow);
+    border-radius: 6px;
+    min-width: 120px;
+    height: 100%;
+    cursor: pointer;
+    color: var(--neon-yellow);
+    font-family: 'Press Start 2P', monospace;
+    font-size: 16px;
+    text-shadow: 0 0 8px var(--neon-yellow);
+  }
+  .add-team:hover { background: rgba(255, 230, 0, 0.15); }
+
+  /* ─── HOST CONTROLS (top right) ─── */
+  .host-controls {
+    position: fixed;
+    top: 80px;
+    right: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    z-index: 9;
+  }
+  .host-btn {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 12px;
+    padding: 12px 16px;
+    background: black;
+    color: var(--neon-yellow);
+    border: 3px solid var(--neon-yellow);
+    cursor: pointer;
+    border-radius: 4px;
+    text-shadow: 0 0 6px var(--neon-yellow);
+    box-shadow: 0 0 10px rgba(255, 230, 0, 0.5);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .host-btn:hover { background: var(--neon-yellow); color: black; }
+  .host-btn.reveal { color: var(--neon-green); border-color: var(--neon-green); text-shadow: 0 0 6px var(--neon-green); box-shadow: 0 0 10px rgba(57, 255, 20, 0.5); }
+  .host-btn.reveal:hover { background: var(--neon-green); color: black; }
+  .host-btn.danger { color: var(--neon-pink); border-color: var(--neon-pink); text-shadow: 0 0 6px var(--neon-pink); }
+  .host-btn.danger:hover { background: var(--neon-pink); color: black; }
+
+  /* ─── ROUND PICKER (top-left tabs) ─── */
+  .round-tabs {
+    position: fixed;
+    top: 80px;
+    left: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    z-index: 9;
+  }
+  .round-tab {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 11px;
+    padding: 8px 12px;
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    border: 2px solid var(--neon-cyan);
+    cursor: pointer;
+    border-radius: 4px;
+    min-width: 120px;
+    text-align: left;
+    letter-spacing: 1px;
+  }
+  .round-tab.active {
+    background: var(--neon-cyan);
+    color: black;
+    border-color: var(--neon-yellow);
+    box-shadow: 0 0 12px var(--neon-cyan);
+  }
+  .round-tab:hover { background: rgba(0, 240, 255, 0.3); }
+
+  /* ─── INTRO + END SCREENS ─── */
+  .splash {
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(circle at center, rgba(255, 45, 146, 0.4), rgba(0, 0, 0, 0.95)),
+      var(--bg-deep);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 20;
+    text-align: center;
+    padding: 32px;
+  }
+  .splash-eyebrow {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 16px;
+    color: var(--chili-red-hot);
+    text-shadow: 0 0 12px var(--chili-red-hot);
+    letter-spacing: 6px;
+    margin-bottom: 8px;
+  }
+  .splash h1 {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 80px;
+    color: var(--neon-yellow);
+    text-shadow:
+      6px 6px 0 var(--chili-red-hot),
+      0 0 40px var(--neon-yellow),
+      0 0 60px var(--neon-pink);
+    letter-spacing: 6px;
+    margin-bottom: 22px;
+    line-height: 1.1;
+  }
+  .splash h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 56px;
+    color: var(--neon-cyan);
+    text-shadow: 4px 4px 0 #000, 0 0 24px var(--neon-cyan);
+    letter-spacing: 4px;
+    margin: 18px 0 12px;
+  }
+  .splash p {
+    font-family: 'VT323', monospace;
+    font-size: 24px;
+    color: var(--paper);
+    max-width: 800px;
+    margin-bottom: 6px;
+    line-height: 1.4;
+  }
+  .chili-pepper-row {
+    font-size: 38px;
+    margin-bottom: 8px;
+    letter-spacing: 14px;
+    filter: drop-shadow(0 0 12px var(--chili-red-hot));
+  }
+  .welcome-line {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 18px;
+    color: var(--chili-red-hot);
+    text-shadow: 2px 2px 0 #000, 0 0 12px var(--chili-red-hot);
+    letter-spacing: 1.5px;
+    margin-bottom: 4px;
+  }
+  .welcome-line .pep { font-size: 22px; }
+  .welcome-sub {
+    font-family: 'VT323', monospace;
+    font-size: 20px;
+    color: rgba(255, 248, 231, 0.7);
+    margin-bottom: 4px;
+  }
+  .poem {
+    margin: 18px 0 22px;
+    padding: 16px 24px;
+    border-left: 4px solid var(--chili-red-hot);
+    border-right: 4px solid var(--chili-red-hot);
+    background: rgba(214, 40, 40, 0.18);
+  }
+  .poem p {
+    font-family: 'VT323', monospace;
+    font-size: 22px;
+    color: var(--paper);
+    margin: 0;
+    line-height: 1.4;
+  }
+  .party-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    max-width: 900px;
+    margin-bottom: 12px;
+  }
+  .party-card {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 11px;
+    color: var(--neon-yellow);
+    background: rgba(0, 0, 0, 0.55);
+    border: 2px solid var(--chili-red-hot);
+    border-radius: 4px;
+    padding: 12px 14px;
+    letter-spacing: 1px;
+    text-align: center;
+    box-shadow: 0 0 8px rgba(250, 36, 60, 0.4);
+  }
+  .splash .start-btn {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 22px;
+    padding: 24px 48px;
+    background: black;
+    color: var(--neon-green);
+    border: 4px solid var(--neon-green);
+    cursor: pointer;
+    margin-top: 40px;
+    text-shadow: 0 0 10px var(--neon-green);
+    box-shadow: 0 0 24px var(--neon-green);
+    letter-spacing: 3px;
+  }
+  .splash .start-btn:hover { background: var(--neon-green); color: black; }
+
+  .happy-bday {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 100px;
+    color: var(--neon-pink);
+    text-shadow: 6px 6px 0 var(--neon-yellow), 0 0 40px var(--neon-pink);
+    letter-spacing: 8px;
+    animation: rainbow 3s ease-in-out infinite;
+  }
+  @keyframes rainbow {
+    0%, 100% { color: var(--neon-pink); text-shadow: 6px 6px 0 var(--neon-yellow), 0 0 40px var(--neon-pink); }
+    33% { color: var(--neon-cyan); text-shadow: 6px 6px 0 var(--neon-pink), 0 0 40px var(--neon-cyan); }
+    66% { color: var(--neon-yellow); text-shadow: 6px 6px 0 var(--neon-cyan), 0 0 40px var(--neon-yellow); }
+  }
+
+  .keyboard-hint {
+    position: fixed;
+    bottom: 210px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'VT323', monospace;
+    font-size: 18px;
+    color: rgba(255, 255, 255, 0.45);
+    z-index: 5;
+    pointer-events: none;
+  }
+
+  /* Confetti */
+  .confetti {
+    position: fixed; inset: 0;
+    pointer-events: none;
+    z-index: 25;
+  }
+
+  /* Party deets floating button + panel */
+  .party-deets-btn {
+    position: fixed;
+    bottom: 220px;
+    right: 16px;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 11px;
+    padding: 12px 16px;
+    background: var(--chili-red-hot);
+    color: white;
+    border: 3px solid var(--neon-yellow);
+    border-radius: 6px;
+    cursor: pointer;
+    z-index: 9;
+    text-shadow: 1px 1px 0 #000;
+    box-shadow: 0 0 16px rgba(250, 36, 60, 0.7);
+    letter-spacing: 1px;
+  }
+  .party-deets-btn:hover {
+    background: white;
+    color: var(--chili-red-hot);
+  }
+  .party-deets-panel {
+    position: fixed;
+    bottom: 270px;
+    right: 16px;
+    width: 360px;
+    background: rgba(0, 0, 0, 0.95);
+    border: 4px solid var(--chili-red-hot);
+    border-radius: 8px;
+    padding: 22px;
+    z-index: 30;
+    box-shadow: 0 0 40px var(--chili-red-hot);
+  }
+  .party-deets-panel h3 {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 12px;
+    color: var(--neon-yellow);
+    text-shadow: 0 0 8px var(--neon-yellow);
+    margin-bottom: 14px;
+    text-align: center;
+    letter-spacing: 1px;
+    line-height: 1.5;
+  }
+  .deets-row {
+    font-family: 'VT323', monospace;
+    font-size: 20px;
+    color: var(--paper);
+    margin: 6px 0;
+  }
+  .deets-divider {
+    height: 2px;
+    background: var(--chili-red-hot);
+    margin: 12px 0;
+    box-shadow: 0 0 6px var(--chili-red-hot);
+  }
+</style>
+</head>
+<body>
+
+<!-- Splash / intro screen -->
+<div id="splash" class="splash">
+  <div class="chili-pepper-row">🎉 🌶️ 🎂 🌶️ 🎉</div>
+  <div class="splash-eyebrow">★ HAPPY BIRTHDAY ★</div>
+  <h1>CAITLYN!</h1>
+  <h2>80s &amp; 90s THROWBACK TRIVIA</h2>
+  <p>This is not entry-level nostalgia.</p>
+  <p>If you don't know your <em>Friends</em> episodes or your 90s music…</p>
+  <p>it's gonna be a long night.</p>
+  <button class="start-btn" onclick="startGame()">PRESS START 🌶️</button>
+  <div style="margin-top: 40px; font-family: 'VT323', monospace; font-size: 16px; color: rgba(255,255,255,0.55);">
+    <span style="color: var(--neon-yellow)">SPACE</span> reveal ·
+    <span style="color: var(--neon-yellow)">← →</span> nav ·
+    <span style="color: var(--neon-yellow)">N</span> next round ·
+    <span style="color: var(--neon-yellow)">T</span> add team ·
+    <span style="color: var(--neon-yellow)">P</span> party deets
+  </div>
+</div>
+
+<!-- Header -->
+<div class="top-bar">
+  <h1><span class="pep">🌶️</span> CAITLYN'S CHILI'S HAPPY HOUR · 80s/90s TRIVIA <span class="pep">🌶️</span></h1>
+  <div class="round-badge" id="round-badge">ROUND 1 / 6</div>
+</div>
+
+<!-- Party deets floating button -->
+<button class="party-deets-btn" onclick="toggleDeets()">🌶️ PARTY DEETS</button>
+<div id="party-deets-panel" class="party-deets-panel" style="display:none;">
+  <h3>🎉 CAITLYN'S BIRTHDAY HAPPY HOUR SHINDIG 🎉</h3>
+  <div class="deets-row">📍 Wilson Residence (Basement Takeover)</div>
+  <div class="deets-row">🗓️ Saturday, May 2nd</div>
+  <div class="deets-row">⏰ 5:00 – 9:00ish (Happy Hour Rules Apply)</div>
+  <div class="deets-divider"></div>
+  <div class="deets-row">🍹 Margaritas pouring</div>
+  <div class="deets-row">🌶️ Chips, salsa &amp; queso</div>
+  <div class="deets-row">🔥 Southwest egg rolls + fajitas</div>
+  <div class="deets-row">🎶 90s/2000s jams + dancing</div>
+  <div class="deets-row">🎯 Games, a little chaos, good times</div>
+  <div class="deets-row">🎤 Karaoke to close it out</div>
+  <div class="deets-divider"></div>
+  <div class="deets-row" style="font-style:italic; color: var(--neon-yellow);">"It's the best little Chili's you've ever seen."</div>
+  <button class="host-btn danger" style="margin-top:18px; width:100%;" onclick="toggleDeets()">CLOSE</button>
+</div>
+
+<!-- Round tabs (left) -->
+<div class="round-tabs" id="round-tabs"></div>
+
+<!-- Host controls (right) -->
+<div class="host-controls">
+  <button class="host-btn" onclick="prevQ()">← PREV</button>
+  <button class="host-btn reveal" id="reveal-btn" onclick="toggleAnswer()">REVEAL ✓</button>
+  <button class="host-btn" onclick="nextQ()">NEXT →</button>
+  <button class="host-btn" onclick="nextRound()">NEXT ROUND ▶</button>
+  <button class="host-btn danger" onclick="endGame()">END</button>
+</div>
+
+<!-- Main stage -->
+<div class="stage" id="stage">
+  <div class="round-title" id="round-title"></div>
+  <div class="round-sub" id="round-sub"></div>
+  <div class="q-counter" id="q-counter"></div>
+  <div class="q-points" id="q-points"></div>
+  <div class="q-prompt" id="q-prompt"></div>
+  <a id="apple-music-btn" class="apple-music-btn" target="_blank" rel="noopener" style="display:none;">PLAY ON APPLE MUSIC</a>
+  <div class="answer hidden" id="answer"></div>
+</div>
+
+<div class="keyboard-hint">SPACE = reveal · ← → navigate · N = next round · T = add team · P = party deets</div>
+
+<!-- Scoreboard -->
+<div class="scoreboard">
+  <div class="scoreboard-title">★ TEAM SCORES ★</div>
+  <div id="teams"></div>
+</div>
+
+<script>
+// ════════════════════════════════════════════════════════════════════
+//  GAME DATA
+// ════════════════════════════════════════════════════════════════════
+
+const ROUNDS = [
+  {
+    name: "Round 1: Name That Song",
+    sub: "★ 2 PTS EACH · LYRICS OR CLIP ★",
+    pts: 2,
+    questions: [
+      { q: "\"My soul keeps on burnin' for the love of my life… my heina…\"", a: "Sublime — Santeria", am: "Sublime Santeria" },
+      { q: "\"Every new beginning comes from some other beginning's end…\"", a: "Semisonic — Closing Time", am: "Semisonic Closing Time" },
+      { q: "\"See, I'd dunk it from the free-throw line, with authority…\"", a: "Skee-Lo — I Wish", am: "Skee-Lo I Wish" },
+      { q: "\"Don't let go, you've got the music in you, one dance left…\"", a: "New Radicals — You Get What You Give", am: "New Radicals You Get What You Give" },
+      { q: "\"I'm a million different people from one day to the next…\"", a: "The Verve — Bittersweet Symphony", am: "The Verve Bittersweet Symphony" },
+      { q: "\"Time keeps on slippin', slippin', slippin' into the future…\" (90s remake)", a: "Seal — Fly Like an Eagle", am: "Seal Fly Like an Eagle Space Jam" },
+      { q: "\"You lied to me — all those times I said that I love you…\"", a: "Mark Morrison — Return of the Mack", am: "Mark Morrison Return of the Mack" },
+      { q: "\"I tried so hard and got so far, but in the end it doesn't even matter…\"", a: "Linkin Park — In the End", am: "Linkin Park In the End" },
+      { q: "\"In my eyes, indisposed, in disguises no one knows…\"", a: "Soundgarden — Black Hole Sun", am: "Soundgarden Black Hole Sun" },
+      { q: "\"Flippin' and a-twistin', she's invitin' me to give it a kiss…\"", a: "Len — Steal My Sunshine", am: "Len Steal My Sunshine" },
+    ],
+  },
+  {
+    name: "Round 2: Finish the Lyric",
+    sub: "★ 2 PTS EACH · WE GIVE THE START, YOU FINISH IT ★",
+    pts: 2,
+    questions: [
+      { q: "\"I'm a genie in a bottle…\"", a: "…you gotta rub me the right way", am: "Christina Aguilera Genie in a Bottle" },
+      { q: "\"No diggity…\"", a: "…I like the way you work it", am: "Blackstreet No Diggity" },
+      { q: "\"I get knocked down…\"", a: "…but I get up again", am: "Chumbawamba Tubthumping" },
+      { q: "\"You oughta know…\"", a: "…that I'm here to remind you", am: "Alanis Morissette You Oughta Know" },
+      { q: "\"Say it ain't so…\"", a: "…I will not go", am: "Weezer Say It Ain't So" },
+      { q: "\"It wasn't me…\"", a: "…caught me on the counter", am: "Shaggy It Wasn't Me" },
+      { q: "\"All star…\"", a: "…hey now, you're an all star", am: "Smash Mouth All Star" },
+      { q: "\"Mo money…\"", a: "…mo problems", am: "Notorious BIG Mo Money Mo Problems" },
+    ],
+  },
+  {
+    name: "Round 3: Friends + 90s TV/Movies",
+    sub: "★ 1–2 PTS · COULD I BE ANY MORE LOST ★",
+    pts: 1,
+    questions: [
+      { q: "What is Chandler Bing's job?", a: "Statistical Analysis & Data Reconfiguration ('transponster' it is NOT)", pts: 2 },
+      { q: "What is the name of Ross's second wife?", a: "Emily" },
+      { q: "What fruit lime is Ross deathly allergic to in Season 9?", a: "Kiwi (in a kiwi-lime pie Phoebe baked)" },
+      { q: "What is Joey's soap-opera character's name?", a: "Dr. Drake Ramoray" },
+      { q: "What is the apartment number Monica & Rachel live in (after the writers fixed it)?", a: "Apartment 20" },
+      { q: "What song do Ross & Monica dance 'The Routine' to at Dick Clark's New Year's Rockin' Eve audition?", a: "'Got to Be Real' — Cheryl Lynn", pts: 2 },
+      { q: "What is the name of Phoebe's identical twin sister?", a: "Ursula Buffay" },
+      { q: "What is Gunther's actual job at Central Perk?", a: "Manager (he started as a barista)" },
+      { q: "What is the name of Joey's stuffed penguin?", a: "Hugsy", pts: 2 },
+      { q: "Who finally pees on Monica after she's stung by a jellyfish?", a: "Chandler (Joey tries first but freezes up)" },
+      { q: "What year did Jurassic Park first hit theaters?", a: "1993" },
+      { q: "Who directed Titanic (1997)?", a: "James Cameron" },
+      { q: "In Toy Story (1995), what is Buzz Lightyear's catchphrase?", a: "\"To Infinity… and Beyond!\"" },
+    ],
+  },
+  {
+    name: "Round 4: Rapid Fire — Deep Cuts",
+    sub: "★ 1 PT EACH · SPEED ROUND ★",
+    pts: 1,
+    questions: [
+      { q: "What did 'AIM' stand for?", a: "AOL Instant Messenger" },
+      { q: "What Japanese company made the original Walkman?", a: "Sony" },
+      { q: "What does 'POG' stand for (the original juice the milk-cap craze was named after)?", a: "Passion Orange Guava" },
+      { q: "What was the iconic Windows XP wallpaper of rolling green hills called?", a: "'Bliss' (real photo, no Photoshop)" },
+      { q: "What two rappers defined the East Coast vs West Coast feud?", a: "The Notorious B.I.G. vs Tupac Shakur" },
+      { q: "What British band sang 'Wonderwall'?", a: "Oasis" },
+      { q: "What happened to a Tamagotchi if you neglected it?", a: "It died" },
+      { q: "What network aired Seinfeld for all 9 seasons?", a: "NBC" },
+    ],
+  },
+  {
+    name: "Round 5: Who Am I?",
+    sub: "★ 2 PTS EACH · GUESS THE ARTIST ★",
+    pts: 2,
+    questions: [
+      { q: "Female artist · 90s · \"Criminal\" · controversial video", a: "Fiona Apple" },
+      { q: "Rapper · \"Hypnotize\" · East Coast legend", a: "The Notorious B.I.G." },
+      { q: "Band · \"1979\" · alt rock", a: "The Smashing Pumpkins" },
+      { q: "Female trio · \"Bills, Bills, Bills\"", a: "Destiny's Child" },
+      { q: "Artist · \"Kiss From a Rose\"", a: "Seal" },
+      { q: "Band · \"Losing My Religion\"", a: "R.E.M." },
+      { q: "Rapper · \"Gin and Juice\"", a: "Snoop Dogg" },
+      { q: "Band · \"Creep\" (NOT TLC)", a: "Radiohead" },
+    ],
+  },
+  {
+    name: "★ THE FINAL FIVE ★",
+    sub: "★ DOUBLE POINTS · 4 PTS EACH · COMEBACK MODE ★",
+    pts: 4,
+    isFinalFive: true,
+    questions: [
+      {
+        q: "Name ALL 6 Friends characters (first names only).",
+        a: "Ross, Rachel, Monica, Chandler, Joey, Phoebe",
+      },
+      {
+        q: "What movie features the line: \"I'll never let go, Jack… I promise.\"",
+        a: "Titanic (1997)",
+        am: "My Heart Will Go On Celine Dion",
+      },
+      {
+        q: "Name TWO members of *NSYNC.",
+        a: "Justin Timberlake · JC Chasez · Joey Fatone · Lance Bass · Chris Kirkpatrick (any 2)",
+        am: "NSYNC Bye Bye Bye",
+      },
+      {
+        q: "What 1991 grunge album opens with \"Smells Like Teen Spirit\"?",
+        a: "Nevermind — Nirvana",
+        am: "Nirvana Nevermind",
+      },
+      {
+        q: "What year did Friends premiere on NBC?",
+        a: "1994 (September 22, 1994)",
+      },
+    ],
+  },
+];
+
+// ════════════════════════════════════════════════════════════════════
+//  STATE
+// ════════════════════════════════════════════════════════════════════
+
+const STORAGE_KEY = 'caitlyn_trivia_v1';
+const STATE_VERSION = 2;  // bump to wipe stale schemas (e.g. wager fields)
+
+let state = loadState() || {
+  v: STATE_VERSION,
+  roundIdx: 0,
+  qIdx: 0,
+  showAnswer: false,
+  teams: [
+    { name: "Team Friends", score: 0 },
+    { name: "Team Tamagotchi", score: 0 },
+  ],
+};
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    // If schema version doesn't match, drop stale state and start fresh
+    if (parsed.v !== STATE_VERSION) {
+      localStorage.removeItem(STORAGE_KEY);
+      return null;
+    }
+    return parsed;
+  } catch (e) { return null; }
+}
+function saveState() {
+  try {
+    state.v = STATE_VERSION;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  } catch (e) {}
+}
+
+// ════════════════════════════════════════════════════════════════════
+//  RENDER
+// ════════════════════════════════════════════════════════════════════
+
+function startGame() {
+  document.getElementById('splash').style.display = 'none';
+  render();
+}
+
+function render() {
+  const round = ROUNDS[state.roundIdx];
+  if (!round) { return endGame(); }
+  const q = round.questions[state.qIdx];
+
+  document.getElementById('round-badge').textContent =
+    `ROUND ${state.roundIdx + 1} / ${ROUNDS.length}`;
+  document.getElementById('round-title').textContent = round.name;
+  document.getElementById('round-sub').textContent = round.sub;
+
+  document.getElementById('q-counter').textContent =
+    round.isFinalFive
+      ? `★ FINAL FIVE · ${state.qIdx + 1} of ${round.questions.length} ★`
+      : `Question ${state.qIdx + 1} of ${round.questions.length}`;
+  const pts = q.pts || round.pts;
+  document.getElementById('q-points').textContent =
+    `+${pts} ${pts === 1 ? 'POINT' : 'POINTS'}` +
+    (round.isFinalFive ? ' · DOUBLE STAKES' : '');
+
+  if (q) {
+    document.getElementById('q-prompt').textContent = q.q;
+    const ansEl = document.getElementById('answer');
+    ansEl.textContent = q.a;
+    ansEl.style.whiteSpace = 'pre-wrap';
+    ansEl.classList.toggle('hidden', !state.showAnswer);
+
+    // Apple Music play button — only on music questions (those with `am`)
+    const amBtn = document.getElementById('apple-music-btn');
+    if (q.am) {
+      amBtn.href = 'https://music.apple.com/us/search?term=' + encodeURIComponent(q.am);
+      amBtn.textContent = state.showAnswer
+        ? `PLAY: ${q.am.toUpperCase()}`
+        : 'PLAY ON APPLE MUSIC';
+      amBtn.style.display = 'inline-flex';
+    } else {
+      amBtn.style.display = 'none';
+    }
+  }
+
+  renderTeams();
+  renderRoundTabs();
+  saveState();
+}
+
+function renderTeams() {
+  const container = document.getElementById('teams');
+  container.innerHTML = '';
+  const sorted = state.teams.map((t, i) => ({ ...t, idx: i }))
+    .sort((a, b) => b.score - a.score);
+  const topScore = sorted.length ? sorted[0].score : 0;
+
+  state.teams.forEach((team, idx) => {
+    const isLeader = team.score === topScore && team.score > 0;
+    const row = document.createElement('div');
+    row.className = 'team-row' + (isLeader ? ' leader' : '');
+    row.innerHTML = `
+      <div class="team-name" onclick="renameTeam(${idx})">${escapeHtml(team.name)}${isLeader ? ' 👑' : ''}</div>
+      <div class="team-score">${team.score}</div>
+      <div class="team-controls">
+        <button class="minus" onclick="adjustScore(${idx}, -1)">-1</button>
+        <button onclick="adjustScore(${idx}, 1)">+1</button>
+        <button onclick="adjustScore(${idx}, 2)">+2</button>
+        <button class="remove" onclick="removeTeam(${idx})">✕</button>
+      </div>
+    `;
+    container.appendChild(row);
+  });
+
+  // Add-team button
+  const addBtn = document.createElement('div');
+  addBtn.className = 'add-team';
+  addBtn.textContent = '+ TEAM';
+  addBtn.onclick = addTeam;
+  container.appendChild(addBtn);
+}
+
+function renderRoundTabs() {
+  const c = document.getElementById('round-tabs');
+  c.innerHTML = '';
+  ROUNDS.forEach((r, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'round-tab' + (i === state.roundIdx ? ' active' : '');
+    btn.textContent = `R${i + 1}`;
+    btn.title = r.name;
+    btn.onclick = () => { state.roundIdx = i; state.qIdx = 0; state.showAnswer = false; render(); };
+    c.appendChild(btn);
+  });
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[c]));
+}
+
+// ════════════════════════════════════════════════════════════════════
+//  ACTIONS
+// ════════════════════════════════════════════════════════════════════
+
+function nextQ() {
+  const round = ROUNDS[state.roundIdx];
+  if (state.qIdx < round.questions.length - 1) {
+    state.qIdx++;
+    state.showAnswer = false;
+    render();
+  } else {
+    nextRound();
+  }
+}
+
+function prevQ() {
+  if (state.qIdx > 0) {
+    state.qIdx--;
+    state.showAnswer = false;
+    render();
+  } else if (state.roundIdx > 0) {
+    state.roundIdx--;
+    state.qIdx = ROUNDS[state.roundIdx].questions.length - 1;
+    state.showAnswer = false;
+    render();
+  }
+}
+
+function nextRound() {
+  if (state.roundIdx < ROUNDS.length - 1) {
+    state.roundIdx++;
+    state.qIdx = 0;
+    state.showAnswer = false;
+    render();
+  } else {
+    endGame();
+  }
+}
+
+function toggleAnswer() {
+  state.showAnswer = !state.showAnswer;
+  render();
+}
+
+function adjustScore(idx, delta) {
+  state.teams[idx].score += delta;
+  render();
+}
+
+function addTeam() {
+  const name = prompt('Team name?');
+  if (!name) return;
+  state.teams.push({ name: name.trim(), score: 0 });
+  render();
+}
+
+function renameTeam(idx) {
+  const newName = prompt('Rename team:', state.teams[idx].name);
+  if (newName) {
+    state.teams[idx].name = newName.trim();
+    render();
+  }
+}
+
+function removeTeam(idx) {
+  if (!confirm(`Remove ${state.teams[idx].name}?`)) return;
+  state.teams.splice(idx, 1);
+  render();
+}
+
+// ── END / SUMMARY ──
+function endGame() {
+  const sorted = [...state.teams].sort((a, b) => b.score - a.score);
+  const winner = sorted[0];
+  const splash = document.getElementById('splash');
+  splash.innerHTML = `
+    <div class="chili-pepper-row">🌶️ 🍹 🌶️ 🍹 🌶️</div>
+    <h1>★ FINAL STANDINGS ★</h1>
+    <div class="happy-bday">${escapeHtml(winner ? winner.name : 'TIE')}</div>
+    <p style="font-size: 28px; color: var(--neon-yellow); margin-top: 18px;">★ CHAMPIONS OF THE 90s ★</p>
+    <div style="margin-top: 24px; font-family: 'Bebas Neue', sans-serif; font-size: 26px;">
+      ${sorted.map((t, i) =>
+        `<div style="margin: 6px 0; color: ${i === 0 ? 'var(--neon-yellow)' : 'var(--paper)'}">
+           ${i + 1}. ${escapeHtml(t.name)} — ${t.score} pts
+         </div>`
+      ).join('')}
+    </div>
+    <div style="margin-top: 36px; padding: 18px 28px; border: 4px solid var(--chili-red-hot); border-radius: 8px; background: rgba(214, 40, 40, 0.18);">
+      <p style="font-size: 32px; color: var(--neon-pink); text-shadow: 0 0 16px var(--neon-pink);">
+        🎉 HAPPY BIRTHDAY CAITLYN 🎉
+      </p>
+      <p style="font-size: 20px; color: var(--paper); margin-top: 8px; font-style: italic;">
+        "It's the best little Chili's you've ever seen."
+      </p>
+    </div>
+    <button class="start-btn" onclick="resetGame()">PLAY AGAIN 🌶️</button>
+  `;
+  splash.style.display = 'flex';
+  fireConfetti();
+}
+
+// ── Party Deets toggle ──
+function toggleDeets() {
+  const p = document.getElementById('party-deets-panel');
+  p.style.display = p.style.display === 'none' ? 'block' : 'none';
+}
+
+function resetGame() {
+  if (!confirm('Reset everything (scores, teams, progress)?')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  location.reload();
+}
+
+// ── CONFETTI ──
+function fireConfetti() {
+  const canvas = document.createElement('canvas');
+  canvas.className = 'confetti';
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  document.body.appendChild(canvas);
+  const ctx = canvas.getContext('2d');
+  const colors = ['#ff2d92', '#00f0ff', '#ffe600', '#39ff14', '#b561ff'];
+  const pieces = Array.from({ length: 200 }, () => ({
+    x: Math.random() * canvas.width,
+    y: -20,
+    vx: (Math.random() - 0.5) * 6,
+    vy: Math.random() * 5 + 4,
+    s: Math.random() * 8 + 4,
+    color: colors[Math.floor(Math.random() * colors.length)],
+    rot: Math.random() * 360,
+  }));
+  let frames = 0;
+  function tick() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    pieces.forEach(p => {
+      p.x += p.vx;
+      p.y += p.vy;
+      p.rot += 4;
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot * Math.PI / 180);
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.s / 2, -p.s / 2, p.s, p.s);
+      ctx.restore();
+    });
+    if (frames++ < 300) requestAnimationFrame(tick);
+    else canvas.remove();
+  }
+  tick();
+}
+
+// ════════════════════════════════════════════════════════════════════
+//  KEYBOARD
+// ════════════════════════════════════════════════════════════════════
+
+document.addEventListener('keydown', (e) => {
+  if (document.getElementById('splash').style.display !== 'none') {
+    if (e.code === 'Space' || e.code === 'Enter') startGame();
+    return;
+  }
+  if (e.target.tagName === 'INPUT') return;
+  if (e.code === 'Space') { e.preventDefault(); toggleAnswer(); }
+  else if (e.code === 'ArrowRight') nextQ();
+  else if (e.code === 'ArrowLeft') prevQ();
+  else if (e.key === 'n' || e.key === 'N') nextRound();
+  else if (e.key === 't' || e.key === 'T') addTeam();
+  else if (e.key === 'r' || e.key === 'R') resetGame();
+  else if (e.key === 'p' || e.key === 'P') toggleDeets();
+});
+
+// ════════════════════════════════════════════════════════════════════
+//  BOOT
+// ════════════════════════════════════════════════════════════════════
+
+// If user has played before, skip splash
+if (state.roundIdx > 0 || state.qIdx > 0 || state.teams.some(t => t.score !== 0)) {
+  document.getElementById('splash').style.display = 'none';
+  render();
+}
+</script>
+</body>
+</html>
