@@ -672,15 +672,15 @@
   </div>
 
 <!-- REVEAL SUMMARY: shows ALL Q+A for the current round on one page -->
-<div id="reveal-summary" style="display:none; position:fixed; top:70px; bottom:200px; left:0; right:0; padding:20px 24px 16px; overflow-y:auto;">
-  <div id="reveal-header" style="text-align:center; margin-bottom:16px;">
-    <div id="reveal-round-num" style="font-family:'Press Start 2P', monospace; font-size:14px; color:var(--neon-green); letter-spacing:3px; margin-bottom:6px; text-shadow:0 0 12px var(--neon-green);"></div>
-    <div id="reveal-round-name" style="font-family:'Bebas Neue', sans-serif; font-size:38px; color:var(--neon-yellow); letter-spacing:4px; text-shadow:3px 3px 0 #000, 0 0 20px var(--neon-yellow);"></div>
-    <div style="font-family:'VT323', monospace; font-size:18px; color:rgba(255,255,255,0.6); margin-top:4px;">★ Read each one out · grade as you go · score at the bottom ★</div>
+<div id="reveal-summary" style="display:none; position:fixed; top:60px; bottom:200px; left:0; right:0; padding:10px 18px 8px; overflow-y:auto;">
+  <div id="reveal-header" style="text-align:center; margin-bottom:8px;">
+    <div id="reveal-round-num" style="font-family:'Press Start 2P', monospace; font-size:11px; color:var(--neon-green); letter-spacing:3px; margin-bottom:2px; text-shadow:0 0 10px var(--neon-green);"></div>
+    <div id="reveal-round-name" style="font-family:'Bebas Neue', sans-serif; font-size:26px; color:var(--neon-yellow); letter-spacing:3px; text-shadow:2px 2px 0 #000, 0 0 16px var(--neon-yellow);"></div>
+    <div style="font-family:'VT323', monospace; font-size:14px; color:rgba(255,255,255,0.55); margin-top:2px;">★ Scroll for all answers · ▶ plays the song · score at the bottom ★</div>
   </div>
   <div id="reveal-list" style="max-width:1100px; margin:0 auto;"></div>
-  <div style="text-align:center; margin:18px 0 8px;">
-    <button class="host-btn reveal" style="font-size:18px; padding:18px 36px;" onclick="openScoring()">📊 SCORE THIS ROUND ▶</button>
+  <div style="text-align:center; margin:14px 0 8px;">
+    <button class="host-btn reveal" style="font-size:16px; padding:14px 28px;" onclick="openScoring()">📊 SCORE THIS ROUND ▶</button>
   </div>
 </div>
   <div class="answer hidden" id="answer"></div>
@@ -988,17 +988,17 @@ function renderRevealSummary() {
   list.innerHTML = '';
   round.questions.forEach((q, i) => {
     const card = document.createElement('div');
-    card.style.cssText = 'display:flex; align-items:center; gap:16px; padding:14px 18px; margin-bottom:8px; background:rgba(0,0,0,0.55); border:2px solid rgba(255,230,0,0.3); border-radius:6px;';
+    card.style.cssText = 'display:flex; align-items:center; gap:10px; padding:6px 10px; margin-bottom:4px; background:rgba(0,0,0,0.55); border:2px solid rgba(255,230,0,0.3); border-radius:5px;';
     const num = document.createElement('div');
-    num.style.cssText = 'font-family:\'Press Start 2P\', monospace; font-size:18px; color:var(--neon-yellow); width:38px; text-align:center; flex-shrink:0;';
+    num.style.cssText = 'font-family:\'Press Start 2P\', monospace; font-size:14px; color:var(--neon-yellow); width:30px; text-align:center; flex-shrink:0;';
     num.textContent = (i + 1);
     const body = document.createElement('div');
     body.style.cssText = 'flex:1; min-width:0;';
     const qLine = document.createElement('div');
-    qLine.style.cssText = 'font-family:\'Bebas Neue\', sans-serif; font-size:20px; color:rgba(255,248,231,0.85); line-height:1.2; margin-bottom:4px; letter-spacing:1px;';
-    qLine.textContent = q.q.replace(/\n/g, ' · ').slice(0, 120);
+    qLine.style.cssText = 'font-family:\'Bebas Neue\', sans-serif; font-size:15px; color:rgba(255,248,231,0.8); line-height:1.15; letter-spacing:0.5px;';
+    qLine.textContent = q.q.replace(/\n/g, ' · ');
     const aLine = document.createElement('div');
-    aLine.style.cssText = 'font-family:\'Bebas Neue\', sans-serif; font-size:24px; color:var(--neon-green); letter-spacing:2px; text-shadow:0 0 12px rgba(57,255,20,0.6);';
+    aLine.style.cssText = 'font-family:\'Bebas Neue\', sans-serif; font-size:19px; color:var(--neon-green); letter-spacing:1.5px; text-shadow:0 0 10px rgba(57,255,20,0.6); line-height:1.15;';
     aLine.innerHTML = '→ ' + escapeHtml(q.a).split('\n').join('<br/>');
     body.appendChild(qLine);
     body.appendChild(aLine);
@@ -1006,7 +1006,7 @@ function renderRevealSummary() {
     card.appendChild(body);
     if (q.yt && q.yt.id) {
       const playBtn = document.createElement('button');
-      playBtn.style.cssText = 'font-family:\'Press Start 2P\', monospace; font-size:11px; padding:10px 14px; background:linear-gradient(135deg,#39ff14,#00f0ff); color:#0a0224; border:3px solid white; border-radius:6px; cursor:pointer; flex-shrink:0; box-shadow:0 0 12px rgba(57,255,20,0.5);';
+      playBtn.style.cssText = 'font-family:\'Press Start 2P\', monospace; font-size:10px; padding:8px 10px; background:linear-gradient(135deg,#39ff14,#00f0ff); color:#0a0224; border:2px solid white; border-radius:5px; cursor:pointer; flex-shrink:0; box-shadow:0 0 10px rgba(57,255,20,0.5);';
       playBtn.textContent = '▶ PLAY';
       playBtn.onclick = () => {
         ytStop();
@@ -1336,7 +1336,7 @@ document.head.appendChild(ytTag);
 window.onYouTubeIframeAPIReady = function() {
   console.log('[trivia] YT IFrame API loaded — building player');
   ytPlayer = new YT.Player('yt-player', {
-    host: 'https://www.youtube-nocookie.com',  // privacy-enhanced + fewer ads
+    host: 'https://www.youtube.com',  // standard host so YouTube Premium ad-skip cookies apply
     height: '180', width: '320', videoId: '',
     playerVars: {
       autoplay: 0, controls: 0, disablekb: 1, fs: 0,
