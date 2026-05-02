@@ -675,9 +675,8 @@
   <div class="q-points" id="q-points"></div>
   <div class="q-prompt" id="q-prompt"></div>
   <div id="player-row" style="display:none; align-items:center; gap:14px; margin-bottom:18px;">
-    <button id="play-btn" class="play-btn" onclick="togglePlay()" title="Play / Pause (P)">▶ PLAY CLIP</button>
+    <button id="play-btn" class="play-btn" onclick="togglePlay()" title="Play / Pause (M)">▶ PLAY CLIP</button>
     <div id="track-meta" style="font-family:'VT323', monospace; font-size:18px; color:rgba(255,248,231,0.6);"></div>
-    <a id="apple-music-btn" class="apple-music-btn" target="_blank" rel="noopener" style="display:none; margin:0;">♫ APPLE MUSIC</a>
   </div>
   <audio id="audio-player" preload="auto"></audio>
   <div class="answer hidden" id="answer"></div>
@@ -885,11 +884,10 @@ function render() {
     ansEl.style.whiteSpace = 'pre-wrap';
     ansEl.classList.toggle('hidden', !state.showAnswer);
 
-    // Music questions get an inline 30s clip player
+    // Music questions get an inline clip player
     const playerRow = document.getElementById('player-row');
     const playBtn = document.getElementById('play-btn');
     const trackMeta = document.getElementById('track-meta');
-    const amBtn = document.getElementById('apple-music-btn');
     const audioEl = document.getElementById('audio-player');
     // Stop any previous track when navigating
     audioEl.pause();
@@ -899,10 +897,10 @@ function render() {
 
     if (q.am) {
       playerRow.style.display = 'flex';
-      amBtn.href = 'https://music.apple.com/us/search?term=' + encodeURIComponent(q.am);
-      amBtn.style.display = 'inline-flex';
-      trackMeta.textContent = state.showAnswer ? q.am.toUpperCase() : '30-second preview';
-      // Hook up the audio source if pre-loaded, else lazy-fetch
+      // Show track name only AFTER the answer is revealed (don't spoil!)
+      trackMeta.textContent = state.showAnswer
+        ? q.am.toUpperCase()
+        : 'Stop anytime · or hit SPACE to reveal';
       const cached = previewCache[q.am];
       if (cached) {
         audioEl.src = cached;
@@ -1023,6 +1021,12 @@ function nextRound() {
 
 function toggleAnswer() {
   state.showAnswer = !state.showAnswer;
+  // Reveal answer = teams already shouted, kill the music
+  const audioEl = document.getElementById('audio-player');
+  if (audioEl && !audioEl.paused) {
+    audioEl.pause();
+    audioEl.currentTime = 0;
+  }
   render();
 }
 
