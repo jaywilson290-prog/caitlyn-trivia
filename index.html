@@ -660,10 +660,11 @@
   <div class="q-points" id="q-points"></div>
   <div class="q-prompt" id="q-prompt"></div>
   <div id="player-row" style="display:none; align-items:center; gap:14px; margin-bottom:18px;">
-    <button id="play-btn" class="play-btn" onclick="togglePlay()" title="Play / Pause (M)">▶ PLAY CLIP</button>
+    <button id="play-btn" class="play-btn" onclick="togglePlay()" title="Play / Pause (M)">▶ PLAY A FEW NOTES</button>
     <div id="track-meta" style="font-family:'VT323', monospace; font-size:18px; color:rgba(255,248,231,0.6);"></div>
   </div>
-  <audio id="audio-player" preload="auto"></audio>
+  <!-- Hidden YouTube IFrame API player (1×1 pixel, audio-only mode) -->
+  <div id="yt-player" style="position:fixed; bottom:-1px; right:-1px; width:1px; height:1px; opacity:0; pointer-events:none;"></div>
   <div class="answer hidden" id="answer"></div>
 </div>
 
@@ -683,19 +684,31 @@
 const ROUNDS = [
   {
     name: "Round 1: Name That Song",
-    sub: "★ 2 PTS EACH · LYRICS OR CLIP ★",
+    sub: "★ 2 PTS EACH · LYRICS + INTRO CLIP ★",
     pts: 2,
     questions: [
-      { q: "\"My soul keeps on burnin' for the love of my life… my heina…\"", a: "Sublime — Santeria", am: "Sublime Santeria" },
-      { q: "\"Every new beginning comes from some other beginning's end…\"", a: "Semisonic — Closing Time", am: "Semisonic Closing Time" },
-      { q: "\"See, I'd dunk it from the free-throw line, with authority…\"", a: "Skee-Lo — I Wish", am: "Skee-Lo I Wish" },
-      { q: "\"Don't let go, you've got the music in you, one dance left…\"", a: "New Radicals — You Get What You Give", am: "New Radicals You Get What You Give" },
-      { q: "\"I'm a million different people from one day to the next…\"", a: "The Verve — Bittersweet Symphony", am: "The Verve Bittersweet Symphony" },
-      { q: "\"Time keeps on slippin', slippin', slippin' into the future…\" (90s remake)", a: "Seal — Fly Like an Eagle", am: "Seal Fly Like an Eagle Space Jam" },
-      { q: "\"You lied to me — all those times I said that I love you…\"", a: "Mark Morrison — Return of the Mack", am: "Mark Morrison Return of the Mack" },
-      { q: "\"I tried so hard and got so far, but in the end it doesn't even matter…\"", a: "Linkin Park — In the End", am: "Linkin Park In the End" },
-      { q: "\"In my eyes, indisposed, in disguises no one knows…\"", a: "Soundgarden — Black Hole Sun", am: "Soundgarden Black Hole Sun" },
-      { q: "\"Flippin' and a-twistin', she's invitin' me to give it a kiss…\"", a: "Len — Steal My Sunshine", am: "Len Steal My Sunshine" },
+      // yt.start/end = non-spoiler intro snippet to play BEFORE reveal.
+      // yt.fullStart = where to jump on reveal (the "yes that's the song" moment, usually chorus).
+      { q: "\"My soul keeps on burnin' for the love of my life… my heina…\"", a: "Sublime — Santeria",
+        am: "Sublime Santeria", yt: { id: "AGcINyx0kHA", start: 0, end: 11, fullStart: 38 } },
+      { q: "\"Every new beginning comes from some other beginning's end…\"", a: "Semisonic — Closing Time",
+        am: "Semisonic Closing Time", yt: { id: "xGytDsqkQY8", start: 0, end: 12, fullStart: 50 } },
+      { q: "\"See, I'd dunk it from the free-throw line, with authority…\"", a: "Skee-Lo — I Wish",
+        am: "Skee-Lo I Wish", yt: { id: "assi6tEoLOQ", start: 0, end: 13, fullStart: 40 } },
+      { q: "\"Don't let go, you've got the music in you, one dance left…\"", a: "New Radicals — You Get What You Give",
+        am: "New Radicals You Get What You Give", yt: { id: "-E_3-DjRxZw", start: 0, end: 13, fullStart: 35 } },
+      { q: "\"I'm a million different people from one day to the next…\"", a: "The Verve — Bittersweet Symphony",
+        am: "The Verve Bittersweet Symphony", yt: { id: "1lyu1KKwC74", start: 0, end: 22, fullStart: 50 } },
+      { q: "\"Time keeps on slippin', slippin', slippin' into the future…\" (90s remake)", a: "Seal — Fly Like an Eagle",
+        am: "Seal Fly Like an Eagle Space Jam", yt: { id: "9qN56_CWCSY", start: 0, end: 14, fullStart: 30 } },
+      { q: "\"You lied to me — all those times I said that I love you…\"", a: "Mark Morrison — Return of the Mack",
+        am: "Mark Morrison Return of the Mack", yt: { id: "7nYoMK9rxEs", start: 0, end: 13, fullStart: 50 } },
+      { q: "\"I tried so hard and got so far, but in the end it doesn't even matter…\"", a: "Linkin Park — In the End",
+        am: "Linkin Park In the End", yt: { id: "eVTXPUF4Oz4", start: 0, end: 14, fullStart: 60 } },
+      { q: "\"In my eyes, indisposed, in disguises no one knows…\"", a: "Soundgarden — Black Hole Sun",
+        am: "Soundgarden Black Hole Sun", yt: { id: "3mbBbFH9fAg", start: 0, end: 22, fullStart: 95 } },
+      { q: "\"Flippin' and a-twistin', she's invitin' me to give it a kiss…\"", a: "Len — Steal My Sunshine",
+        am: "Len Steal My Sunshine", yt: { id: "bI8L5VKDuuk", start: 0, end: 13, fullStart: 35 } },
     ],
   },
   {
@@ -703,14 +716,23 @@ const ROUNDS = [
     sub: "★ 2 PTS EACH · WE GIVE THE START, YOU FINISH IT ★",
     pts: 2,
     questions: [
-      { q: "\"I'm a genie in a bottle…\"", a: "…you gotta rub me the right way", am: "Christina Aguilera Genie in a Bottle" },
-      { q: "\"No diggity…\"", a: "…I like the way you work it", am: "Blackstreet No Diggity" },
-      { q: "\"I get knocked down…\"", a: "…but I get up again", am: "Chumbawamba Tubthumping" },
-      { q: "\"You oughta know…\"", a: "…that I'm here to remind you", am: "Alanis Morissette You Oughta Know" },
-      { q: "\"Say it ain't so…\"", a: "…I will not go", am: "Weezer Say It Ain't So" },
-      { q: "\"It wasn't me…\"", a: "…caught me on the counter", am: "Shaggy It Wasn't Me" },
-      { q: "\"All star…\"", a: "…hey now, you're an all star", am: "Smash Mouth All Star" },
-      { q: "\"Mo money…\"", a: "…mo problems", am: "Notorious BIG Mo Money Mo Problems" },
+      // No pre-reveal clip (lyric IS the question). Clip plays as celebration on reveal.
+      { q: "\"I'm a genie in a bottle…\"", a: "…you gotta rub me the right way",
+        am: "Christina Aguilera Genie in a Bottle", yt: { id: "kIDWgqDBNXA", fullStart: 35 } },
+      { q: "\"No diggity…\"", a: "…I like the way you work it",
+        am: "Blackstreet No Diggity", yt: { id: "u3ZIhgpbbbg", fullStart: 50 } },
+      { q: "\"I get knocked down…\"", a: "…but I get up again",
+        am: "Chumbawamba Tubthumping", yt: { id: "2H5uWRjFsGc", fullStart: 18 } },
+      { q: "\"You oughta know…\"", a: "…that I'm here to remind you",
+        am: "Alanis Morissette You Oughta Know", yt: { id: "NmugSMBh_iI", fullStart: 60 } },
+      { q: "\"Say it ain't so…\"", a: "…I will not go",
+        am: "Weezer Say It Ain't So", yt: { id: "8QPb7rChrwM", fullStart: 110 } },
+      { q: "\"It wasn't me…\"", a: "…caught me on the counter",
+        am: "Shaggy It Wasn't Me", yt: { id: "Z_RpkddJgI4", fullStart: 30 } },
+      { q: "\"All star…\"", a: "…hey now, you're an all star",
+        am: "Smash Mouth All Star", yt: { id: "L_jWHffIx5E", fullStart: 18 } },
+      { q: "\"Mo money…\"", a: "…mo problems",
+        am: "Notorious BIG Mo Money Mo Problems", yt: { id: "0lPL5kwhjW0", fullStart: 50 } },
     ],
   },
   {
@@ -777,16 +799,19 @@ const ROUNDS = [
         q: "What movie features the line: \"I'll never let go, Jack… I promise.\"",
         a: "Titanic (1997)",
         am: "My Heart Will Go On Celine Dion",
+        yt: { id: "_Yhyp-_hX2s", fullStart: 60 },
       },
       {
         q: "Name TWO members of *NSYNC.",
         a: "Justin Timberlake · JC Chasez · Joey Fatone · Lance Bass · Chris Kirkpatrick (any 2)",
         am: "NSYNC Bye Bye Bye",
+        yt: { id: "Eo-KmOd3i7s", fullStart: 50 },
       },
       {
         q: "What 1991 grunge album opens with \"Smells Like Teen Spirit\"?",
         a: "Nevermind — Nirvana",
         am: "Nirvana Nevermind",
+        yt: { id: "hTWKbfoikeg", fullStart: 30 },
       },
       {
         q: "What year did Friends premiere on NBC?",
@@ -869,43 +894,29 @@ function render() {
     ansEl.style.whiteSpace = 'pre-wrap';
     ansEl.classList.toggle('hidden', !state.showAnswer);
 
-    // Music questions: clip player visible always so you can play a
-    // few notes WITH the lyric (classic "Name That Song"). Apple's
-    // 30s previews are the chorus though, so use your discretion —
-    // some songs the chorus = the title (spoiler), others the snippet
-    // is iconic intro/verse. Host has the pause button.
+    // Music questions get a YouTube clip player.
+    // PRE-REVEAL: plays a hand-picked NON-SPOILER intro snippet (start→end seconds).
+    // POST-REVEAL: plays from `fullStart` (chorus / iconic moment) as celebration.
     const playerRow = document.getElementById('player-row');
     const playBtn = document.getElementById('play-btn');
     const trackMeta = document.getElementById('track-meta');
-    const audioEl = document.getElementById('audio-player');
-    // Stop any previous track when navigating
-    audioEl.pause();
-    audioEl.currentTime = 0;
+    // Stop any previous YouTube playback when navigating
+    ytStop();
     playBtn.classList.remove('playing');
     playBtn.textContent = state.showAnswer ? '▶ PLAY THE SONG' : '▶ PLAY A FEW NOTES';
 
-    if (q.am) {
+    if (q.yt && (q.yt.start != null || q.yt.fullStart != null)) {
       playerRow.style.display = 'flex';
-      trackMeta.textContent = state.showAnswer
-        ? q.am.toUpperCase()
-        : '⚠ may include chorus — pause early if it spoils';
-      const cached = previewCache[q.am];
-      if (cached) {
-        audioEl.src = cached;
-        playBtn.classList.remove('loading');
-        playBtn.disabled = false;
+      // Pre-reveal: only show the player if there's a non-spoiler clip configured
+      // (some questions might be reveal-only — Round 2 lyric finishers, Final Five)
+      const hasIntroClip = q.yt.start != null && q.yt.end != null;
+      if (state.showAnswer) {
+        trackMeta.textContent = (q.am || '').toUpperCase();
+      } else if (hasIntroClip) {
+        trackMeta.textContent = `~${q.yt.end - q.yt.start} sec intro · safe snippet`;
       } else {
-        playBtn.classList.add('loading');
-        playBtn.disabled = true;
-        fetchPreview(q.am).then(url => {
-          if (url) {
-            audioEl.src = url;
-            playBtn.classList.remove('loading');
-            playBtn.disabled = false;
-          } else {
-            playBtn.textContent = '— PREVIEW UNAVAILABLE —';
-          }
-        });
+        // No pre-reveal clip — hide the player until reveal
+        playerRow.style.display = 'none';
       }
     } else {
       playerRow.style.display = 'none';
@@ -1071,27 +1082,15 @@ function applyRoundScores() {
 
 function toggleAnswer() {
   state.showAnswer = !state.showAnswer;
-  const audioEl = document.getElementById('audio-player');
-  if (audioEl && !audioEl.paused) {
-    audioEl.pause();
-    audioEl.currentTime = 0;
-  }
+  // Always stop any current playback first
+  ytStop();
   render();
-  // If we just revealed the answer to a music question, auto-play the clip
-  // as the celebration moment. Wait a tick for the player to render.
+  // If we just revealed the answer to a music question, auto-play the
+  // chorus / iconic moment as the celebration.
   const round = ROUNDS[state.roundIdx];
   const q = round && round.questions[state.qIdx];
-  if (state.showAnswer && q && q.am) {
-    setTimeout(() => {
-      const a = document.getElementById('audio-player');
-      const btn = document.getElementById('play-btn');
-      if (a && a.src && !btn.disabled) {
-        a.play().then(() => {
-          btn.classList.add('playing');
-          btn.textContent = '⏸ PAUSE';
-        }).catch(() => {/* browser blocked autoplay, that's fine */});
-      }
-    }, 300);
+  if (state.showAnswer && q && q.yt) {
+    setTimeout(() => ytLoadAndPlay(q.yt, true), 250);
   }
 }
 
@@ -1203,73 +1202,87 @@ function fireConfetti() {
 }
 
 // ════════════════════════════════════════════════════════════════════
-//  iTUNES PREVIEW CLIPS — 30-second snippets, free, no API key
+//  YOUTUBE PLAYER — hand-picked clip timestamps
+//  Each music question has a `yt: {id, start, end, fullStart}` field.
+//  Pre-reveal: plays start→end (intro snippet, no title spoiler).
+//  Post-reveal: plays from fullStart (chorus / iconic moment as celebration).
 // ════════════════════════════════════════════════════════════════════
 
-const previewCache = {};   // query → previewUrl
+let ytPlayer = null;
+let ytReady = false;
+let ytQueuedAction = null;  // function to run once API is ready
 
-async function fetchPreview(query) {
-  if (previewCache[query] !== undefined) return previewCache[query];
-  try {
-    const url = `https://itunes.apple.com/search?term=${encodeURIComponent(query)}&entity=song&limit=1`;
-    const r = await fetch(url);
-    const j = await r.json();
-    const preview = (j.results && j.results[0] && j.results[0].previewUrl) || null;
-    previewCache[query] = preview;
-    return preview;
-  } catch (e) {
-    previewCache[query] = null;
-    return null;
+// Load the YouTube IFrame API
+const ytTag = document.createElement('script');
+ytTag.src = 'https://www.youtube.com/iframe_api';
+document.head.appendChild(ytTag);
+
+window.onYouTubeIframeAPIReady = function() {
+  ytPlayer = new YT.Player('yt-player', {
+    height: '1', width: '1', videoId: '',
+    playerVars: {
+      autoplay: 0, controls: 0, disablekb: 1, fs: 0,
+      modestbranding: 1, rel: 0, playsinline: 1,
+    },
+    events: {
+      onReady: () => {
+        ytReady = true;
+        if (ytQueuedAction) { ytQueuedAction(); ytQueuedAction = null; }
+      },
+      onStateChange: (e) => {
+        const playBtn = document.getElementById('play-btn');
+        if (!playBtn) return;
+        if (e.data === YT.PlayerState.ENDED) {
+          playBtn.classList.remove('playing');
+          playBtn.textContent = state.showAnswer ? '▶ PLAY AGAIN' : '▶ PLAY A FEW NOTES';
+        } else if (e.data === YT.PlayerState.PLAYING) {
+          playBtn.classList.add('playing');
+          playBtn.textContent = '⏸ PAUSE';
+        } else if (e.data === YT.PlayerState.PAUSED) {
+          playBtn.classList.remove('playing');
+          playBtn.textContent = state.showAnswer ? '▶ PLAY THE SONG' : '▶ PLAY A FEW NOTES';
+        }
+      },
+    },
+  });
+};
+
+function ytLoadAndPlay(yt, useFullStart) {
+  if (!ytReady) {
+    // API not ready yet — queue it
+    ytQueuedAction = () => ytLoadAndPlay(yt, useFullStart);
+    return;
   }
+  const startSec = useFullStart && yt.fullStart != null ? yt.fullStart : (yt.start || 0);
+  const endSec = useFullStart ? undefined : (yt.end || (startSec + 12));
+  const opts = { videoId: yt.id, startSeconds: startSec };
+  if (endSec) opts.endSeconds = endSec;
+  ytPlayer.loadVideoById(opts);
+  // loadVideoById auto-plays on most browsers; ensure it kicks off
+  setTimeout(() => { try { ytPlayer.playVideo(); } catch(e){} }, 100);
 }
 
-async function preloadAllPreviews() {
-  const queries = [];
-  ROUNDS.forEach(r => {
-    r.questions.forEach(q => {
-      if (q.am && !previewCache[q.am]) queries.push(q.am);
-    });
-  });
-  // Fetch in parallel with a polite cap of 6 at a time
-  const batchSize = 6;
-  for (let i = 0; i < queries.length; i += batchSize) {
-    await Promise.all(queries.slice(i, i + batchSize).map(fetchPreview));
+function ytStop() {
+  if (ytReady && ytPlayer && ytPlayer.stopVideo) {
+    try { ytPlayer.stopVideo(); } catch(e){}
   }
-  console.log(`[trivia] preloaded ${Object.keys(previewCache).length} previews`);
 }
 
 function togglePlay() {
-  const audioEl = document.getElementById('audio-player');
+  const round = ROUNDS[state.roundIdx];
+  const q = round && round.questions[state.qIdx];
+  if (!q || !q.yt) return;
   const playBtn = document.getElementById('play-btn');
-  if (!audioEl.src || playBtn.disabled) return;
-  if (audioEl.paused) {
-    audioEl.play().then(() => {
-      playBtn.classList.add('playing');
-      playBtn.textContent = '⏸ PAUSE';
-    }).catch(err => {
-      console.warn('Play failed:', err);
-      playBtn.textContent = '— PLAY BLOCKED —';
-    });
-  } else {
-    audioEl.pause();
-    playBtn.classList.remove('playing');
-    playBtn.textContent = '▶ PLAY CLIP';
+  // If already playing → pause
+  if (ytReady && ytPlayer.getPlayerState && ytPlayer.getPlayerState() === 1) {
+    ytPlayer.pauseVideo();
+    return;
   }
+  // Otherwise load + play (use fullStart if answer is revealed)
+  ytLoadAndPlay(q.yt, state.showAnswer);
+  playBtn.classList.add('playing');
+  playBtn.textContent = '⏸ PAUSE';
 }
-
-// Reset button when audio finishes naturally
-document.addEventListener('DOMContentLoaded', () => {
-  const audioEl = document.getElementById('audio-player');
-  if (audioEl) {
-    audioEl.addEventListener('ended', () => {
-      const playBtn = document.getElementById('play-btn');
-      playBtn.classList.remove('playing');
-      playBtn.textContent = '▶ PLAY AGAIN';
-    });
-  }
-  // Kick off preloading in the background
-  preloadAllPreviews();
-});
 
 
 // ════════════════════════════════════════════════════════════════════
