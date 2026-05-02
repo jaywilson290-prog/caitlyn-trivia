@@ -652,7 +652,7 @@
   </div>
 </div>
 
-<!-- Main stage -->
+<!-- Main stage (ASK phase) -->
 <div class="stage" id="stage">
   <div class="round-title" id="round-title"></div>
   <div class="round-sub" id="round-sub"></div>
@@ -663,27 +663,25 @@
     <button id="play-btn" class="play-btn" onclick="togglePlay()" title="Play / Pause (M)">▶ PLAY A FEW NOTES</button>
     <div id="track-meta" style="font-family:'VT323', monospace; font-size:18px; color:rgba(255,248,231,0.6);"></div>
   </div>
-  <!-- Off-screen YouTube IFrame API player at REAL size (320×180).
-       Browsers refuse audio playback when iframe is "invisible" (1×1, opacity 0,
-       display:none) — so we keep it real-sized but positioned far off-screen.
-       Plays ONLY on host's button click (user gesture). No popup, no autoplay. -->
-  <div id="yt-player-wrap" style="position:fixed; left:-9999px; top:0; width:320px; height:180px; pointer-events:none; overflow:hidden;">
-    <div id="yt-player"></div>
-  </div>
+  <div class="answer hidden" id="answer"></div>
+</div>
 
-<!-- REVEAL SUMMARY: shows ALL Q+A for the current round on one page -->
-<div id="reveal-summary" style="display:none; position:fixed; top:60px; bottom:200px; left:0; right:0; padding:10px 18px 8px; overflow-y:auto;">
+<!-- Off-screen YouTube IFrame API player. Persistent across phases so playback is reliable. -->
+<div id="yt-player-wrap" style="position:fixed; left:-9999px; top:0; width:320px; height:180px; pointer-events:none; overflow:hidden; z-index:1;">
+  <div id="yt-player"></div>
+</div>
+
+<!-- REVEAL SUMMARY: shows ALL Q+A for the current round (OUTSIDE #stage so it shows when stage is hidden) -->
+<div id="reveal-summary" style="display:none; position:fixed; top:60px; bottom:200px; left:0; right:0; padding:10px 18px 8px; overflow-y:auto; z-index:5;">
   <div id="reveal-header" style="text-align:center; margin-bottom:8px;">
     <div id="reveal-round-num" style="font-family:'Press Start 2P', monospace; font-size:11px; color:var(--neon-green); letter-spacing:3px; margin-bottom:2px; text-shadow:0 0 10px var(--neon-green);"></div>
-    <div id="reveal-round-name" style="font-family:'Bebas Neue', sans-serif; font-size:26px; color:var(--neon-yellow); letter-spacing:3px; text-shadow:2px 2px 0 #000, 0 0 16px var(--neon-yellow);"></div>
-    <div style="font-family:'VT323', monospace; font-size:14px; color:rgba(255,255,255,0.55); margin-top:2px;">★ Scroll for all answers · ▶ plays the song · score at the bottom ★</div>
+    <div id="reveal-round-name" style="font-family:'Bebas Neue', sans-serif; font-size:24px; color:var(--neon-yellow); letter-spacing:3px; text-shadow:2px 2px 0 #000, 0 0 14px var(--neon-yellow);"></div>
+    <div style="font-family:'VT323', monospace; font-size:13px; color:rgba(255,255,255,0.55); margin-top:2px;">★ Scroll for all answers · ▶ plays the song · score at the bottom ★</div>
   </div>
   <div id="reveal-list" style="max-width:1100px; margin:0 auto;"></div>
   <div style="text-align:center; margin:14px 0 8px;">
     <button class="host-btn reveal" style="font-size:16px; padding:14px 28px;" onclick="openScoring()">📊 SCORE THIS ROUND ▶</button>
   </div>
-</div>
-  <div class="answer hidden" id="answer"></div>
 </div>
 
 <div class="keyboard-hint">SPACE / → = next · ← = back · M = play music · S = score · N = next round · T = add team · P = party deets</div>
