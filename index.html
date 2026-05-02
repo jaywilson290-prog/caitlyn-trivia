@@ -91,13 +91,43 @@
     position: fixed;
     top: 70px;
     bottom: 200px;
-    left: 0; right: 0;
+    left: 160px;       /* clear the round-tabs column on the left */
+    right: 200px;      /* clear the host-controls column on the right */
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 32px;
+    padding: 24px;
     text-align: center;
+  }
+  /* Narrow / portrait screens (Pi TV): stack controls top/bottom, give stage full width */
+  @media (max-width: 900px), (orientation: portrait) {
+    .stage { left: 0; right: 0; padding: 20px 12px; }
+    .host-controls {
+      top: 76px;
+      right: 8px;
+      flex-direction: row !important;
+      flex-wrap: wrap;
+      gap: 4px;
+      max-width: 50%;
+      justify-content: flex-end;
+    }
+    .host-controls .host-btn {
+      font-size: 10px !important;
+      padding: 6px 8px !important;
+    }
+    .round-tabs {
+      top: 76px;
+      left: 8px;
+      flex-direction: row !important;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+    .round-tabs .round-tab {
+      font-size: 9px !important;
+      padding: 5px 7px !important;
+      min-width: 38px !important;
+    }
   }
 
   .round-title {
