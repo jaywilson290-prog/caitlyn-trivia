@@ -4,36 +4,35 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>🌶️ Team Answer Sheet · Caitlyn's Trivia</title>
-<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=Bebas+Neue&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Bebas+Neue&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: #f4f1e6; }
   body {
     font-family: 'Inter', sans-serif;
-    background: #fff8e7;
     color: #0a0224;
-    padding: 18px 24px;
-    max-width: 1100px;
+    padding: 24px;
+    max-width: 8.5in;
     margin: 0 auto;
-    font-size: 13px;
   }
 
-  /* Print-friendly button — visible on screen, hidden when printing */
+  /* Print bar (hidden when printing) */
   .print-bar {
-    position: sticky;
-    top: 0;
-    background: #fff8e7;
-    padding: 8px 0 12px;
-    margin-bottom: 8px;
+    position: sticky; top: 0;
+    background: #f4f1e6;
+    padding: 10px 0;
+    margin-bottom: 12px;
     z-index: 10;
     display: flex;
     justify-content: space-between;
     align-items: center;
     border-bottom: 2px dashed #fa243c;
+    gap: 12px;
   }
   .print-bar button {
     font-family: 'Press Start 2P', monospace;
     font-size: 12px;
-    padding: 10px 18px;
+    padding: 12px 22px;
     background: #fa243c;
     color: white;
     border: 3px solid #0a0224;
@@ -44,190 +43,289 @@
   .print-bar button:hover { background: #0a0224; }
   .print-bar .info { font-size: 13px; color: #555; }
 
-  .header {
+  /* Header — birthday + branding */
+  .sheet-header {
     text-align: center;
+    padding: 12px 14px;
+    border: 4px double #0a0224;
     margin-bottom: 14px;
-    padding-bottom: 10px;
-    border-bottom: 4px double #0a0224;
+    background: white;
   }
-  .header h1 {
+  .sheet-header h1 {
     font-family: 'Press Start 2P', monospace;
-    font-size: 18px;
+    font-size: 16px;
     color: #fa243c;
     letter-spacing: 2px;
     margin-bottom: 4px;
   }
-  .header .sub {
+  .sheet-header .sub {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 18px;
+    font-size: 22px;
     color: #0a0224;
-    letter-spacing: 4px;
+    letter-spacing: 6px;
+    margin: 4px 0;
   }
-  .header .meta {
+  .sheet-header .meta {
     font-size: 11px;
     color: #666;
-    margin-top: 4px;
-  }
-
-  .team-name-row {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 14px;
-    padding: 10px 14px;
-    border: 2px solid #0a0224;
-    background: rgba(250, 36, 60, 0.1);
-  }
-  .team-name-row label {
-    font-family: 'Press Start 2P', monospace;
-    font-size: 11px;
     letter-spacing: 1px;
   }
-  .team-name-row .line {
+
+  /* Team name field */
+  .team-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 18px;
+    border: 3px solid #0a0224;
+    background: rgba(250, 36, 60, 0.08);
+    margin-bottom: 16px;
+  }
+  .team-row .label {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 13px;
+    color: #fa243c;
+    letter-spacing: 1px;
+    white-space: nowrap;
+  }
+  .team-row .line {
     flex: 1;
-    border-bottom: 2px solid #0a0224;
-    height: 28px;
+    border-bottom: 3px solid #0a0224;
+    height: 36px;
   }
 
-  /* 2-column layout for compact printing */
+  /* 2-column layout */
   .columns {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 14px 24px;
+    gap: 16px;
   }
 
+  /* Round block */
   .round-block {
     break-inside: avoid;
     page-break-inside: avoid;
-    border: 2px solid #0a0224;
-    padding: 10px 14px 12px;
-    margin-bottom: 10px;
+    border: 3px solid #0a0224;
+    padding: 12px 16px 14px;
     background: white;
+    margin-bottom: 14px;
   }
-  .round-block .round-head {
+  .round-head {
     display: flex;
     justify-content: space-between;
     align-items: baseline;
-    border-bottom: 2px dashed #fa243c;
-    padding-bottom: 5px;
-    margin-bottom: 8px;
+    border-bottom: 3px solid #fa243c;
+    padding-bottom: 6px;
+    margin-bottom: 10px;
   }
-  .round-block .round-head .name {
+  .round-head .name {
     font-family: 'Press Start 2P', monospace;
     font-size: 11px;
     color: #fa243c;
-    letter-spacing: 0.5px;
+    letter-spacing: 1px;
   }
-  .round-block .round-head .pts {
+  .round-head .pts {
     font-family: 'Press Start 2P', monospace;
     font-size: 9px;
     color: #555;
+    letter-spacing: 0.5px;
   }
 
+  /* Answer line — handwriting-friendly */
   .answer-line {
     display: flex;
-    align-items: center;
+    align-items: flex-end;
     gap: 8px;
-    padding: 4px 0;
-    border-bottom: 1px solid #ccc;
+    padding: 4px 0 6px;
   }
-  .answer-line:last-of-type { border-bottom: none; }
+  .answer-line + .answer-line { border-top: none; }
   .answer-line .num {
-    font-weight: 700;
-    font-size: 12px;
+    font-weight: 800;
+    font-size: 14px;
     color: #fa243c;
-    min-width: 20px;
-    text-align: right;
+    min-width: 24px;
+    line-height: 1;
+    padding-bottom: 2px;
   }
-  .answer-line .pts-tag {
-    font-size: 10px;
-    color: #888;
-    min-width: 36px;
+  .answer-line .pt-pill {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 8px;
+    color: #555;
+    background: #f4f1e6;
+    padding: 3px 5px;
+    border-radius: 3px;
+    border: 1px solid #ccc;
+    line-height: 1;
+    margin-bottom: 2px;
+  }
+  .answer-line .pt-pill.star {
+    color: #fa243c;
+    border-color: #fa243c;
   }
   .answer-line .blank {
     flex: 1;
-    min-height: 22px;
+    border-bottom: 2px solid #333;
+    height: 28px;
   }
   .answer-line .check {
     width: 22px;
     height: 22px;
-    border: 1.5px solid #888;
+    border: 2px solid #888;
     border-radius: 3px;
+    flex-shrink: 0;
+    margin-bottom: 4px;
   }
 
+  /* Round total */
   .round-total {
-    margin-top: 8px;
-    padding-top: 6px;
-    border-top: 2px solid #0a0224;
+    margin-top: 10px;
+    padding-top: 8px;
+    border-top: 2px dashed #0a0224;
     display: flex;
     justify-content: space-between;
+    align-items: center;
     font-family: 'Press Start 2P', monospace;
-    font-size: 9px;
+    font-size: 10px;
+    letter-spacing: 1px;
   }
   .round-total .total-box {
     border: 2px solid #0a0224;
-    padding: 2px 14px;
-    min-width: 60px;
+    padding: 4px 16px;
+    min-width: 70px;
     text-align: right;
+    font-size: 12px;
+    background: #fff8e7;
   }
 
+  /* Final five = special highlight */
+  .round-block.final-five {
+    border-color: #fa243c;
+    border-width: 4px;
+    background: #fff8e7;
+  }
+  .round-block.final-five .round-head {
+    border-bottom-color: #0a0224;
+  }
+  .round-block.final-five .round-head .name {
+    color: #0a0224;
+    font-size: 12px;
+  }
+  .round-block.final-five .pt-pill {
+    background: #fa243c;
+    color: white;
+    border-color: #0a0224;
+  }
+
+  /* Footer / grand total */
   .footer {
-    margin-top: 18px;
+    margin-top: 20px;
     text-align: center;
     border-top: 4px double #0a0224;
-    padding-top: 10px;
-    font-family: 'Press Start 2P', monospace;
-    font-size: 10px;
+    padding-top: 14px;
   }
   .grand-total {
     display: inline-flex;
     align-items: center;
-    gap: 12px;
-    padding: 10px 18px;
-    border: 3px solid #fa243c;
+    gap: 16px;
+    padding: 14px 24px;
+    border: 4px solid #fa243c;
     background: rgba(250, 36, 60, 0.08);
+    font-family: 'Press Start 2P', monospace;
   }
-  .grand-total .label { color: #fa243c; }
+  .grand-total .label {
+    font-size: 13px;
+    color: #fa243c;
+    letter-spacing: 2px;
+  }
   .grand-total .box {
-    border: 2px solid #0a0224;
-    padding: 4px 18px;
-    min-width: 80px;
+    border: 3px solid #0a0224;
+    padding: 6px 22px;
+    min-width: 100px;
     text-align: right;
-    font-size: 14px;
+    font-size: 18px;
+    background: white;
+  }
+  .footer .bday {
+    margin-top: 12px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 6px;
+    color: #fa243c;
   }
 
+  /* Page break + spans */
+  .page-break { break-before: page; page-break-before: always; }
+  .span-2 { grid-column: 1 / -1; }
+
+  /* PRINT STYLES — tuned for letter-size paper */
   @media print {
-    @page { margin: 0.4in; size: letter; }
-    body { padding: 0; max-width: none; font-size: 12px; }
+    @page {
+      margin: 0.4in;
+      size: letter;
+    }
+    html, body {
+      background: white;
+      padding: 0;
+      max-width: none;
+      font-size: 11px;
+    }
     .print-bar { display: none; }
-    .header h1 { color: #fa243c !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-    .round-block .round-head .name { color: #fa243c !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-    .round-block .round-head { border-color: #fa243c !important; }
-    .answer-line .num { color: #fa243c !important; }
-    .grand-total { background: rgba(250,36,60,0.05) !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-    .grand-total .label { color: #fa243c !important; }
+    .columns { gap: 12px; }
+    .round-block {
+      padding: 8px 12px 10px;
+      margin-bottom: 10px;
+      box-shadow: none;
+    }
+    .answer-line { padding: 2px 0 4px; }
+    .answer-line .blank { height: 22px; border-bottom-width: 1.5px; }
+    .answer-line .check { width: 18px; height: 18px; }
+    .answer-line .num { font-size: 13px; }
+    .answer-line .pt-pill { font-size: 7px; padding: 2px 4px; }
+    .round-head { padding-bottom: 4px; margin-bottom: 6px; }
+    .round-head .name { font-size: 10px; }
+    .round-head .pts { font-size: 8px; }
+    .round-total { font-size: 9px; padding-top: 6px; margin-top: 6px; }
+    .round-total .total-box { font-size: 11px; padding: 3px 12px; min-width: 60px; }
+    .sheet-header { padding: 8px 12px; margin-bottom: 10px; }
+    .sheet-header h1 { font-size: 13px; }
+    .sheet-header .sub { font-size: 18px; }
+    .team-row { padding: 8px 14px; margin-bottom: 12px; }
+    .team-row .line { height: 28px; }
+    .grand-total { padding: 10px 18px; }
+    .grand-total .label { font-size: 11px; }
+    .grand-total .box { font-size: 15px; padding: 4px 18px; min-width: 80px; }
+    .footer .bday { font-size: 16px; margin-top: 8px; }
+    /* Force colors on print */
+    .sheet-header h1, .round-head .name, .answer-line .num,
+    .grand-total .label, .footer .bday, .team-row .label {
+      color: #fa243c !important;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    .grand-total, .team-row, .round-block.final-five {
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
   }
 </style>
 </head>
 <body>
 
 <div class="print-bar">
-  <div>
-    <button onclick="window.print()">🖨️ PRINT — ONE PER TEAM</button>
-  </div>
+  <button onclick="window.print()">🖨️ PRINT — ONE PER TEAM</button>
   <div class="info">
-    Tip: Print 4–6 copies (one per team). Cmd+P (Mac) / Ctrl+P (PC).
+    <strong>Tip:</strong> 1 sheet = 1 team. Print 4–6 copies. Cmd+P (Mac) / Ctrl+P (PC).
   </div>
 </div>
 
-<div class="header">
+<div class="sheet-header">
   <h1>🌶️ CAITLYN'S 80s/90s THROWBACK TRIVIA 🌶️</h1>
   <div class="sub">★ TEAM ANSWER SHEET ★</div>
-  <div class="meta">Saturday May 2 · Wilson Residence · 95 PTS POSSIBLE</div>
+  <div class="meta">SATURDAY MAY 2 · WILSON RESIDENCE · 95 PTS POSSIBLE</div>
 </div>
 
-<div class="team-name-row">
-  <label>TEAM NAME:</label>
+<div class="team-row">
+  <span class="label">★ TEAM NAME:</span>
   <div class="line"></div>
 </div>
 
@@ -236,119 +334,129 @@
   <!-- ROUND 1 -->
   <div class="round-block">
     <div class="round-head">
-      <span class="name">🎵 ROUND 1: NAME THAT SONG</span>
-      <span class="pts">2 PTS EACH · MAX 20</span>
+      <span class="name">🎵 R1 · NAME THAT SONG</span>
+      <span class="pts">2 PTS · MAX 20</span>
     </div>
-    <div class="answer-line"><span class="num">1.</span><span class="pts-tag">[2pt]</span><span class="blank"></span><span class="check"></span></div>
-    <div class="answer-line"><span class="num">2.</span><span class="pts-tag">[2pt]</span><span class="blank"></span><span class="check"></span></div>
-    <div class="answer-line"><span class="num">3.</span><span class="pts-tag">[2pt]</span><span class="blank"></span><span class="check"></span></div>
-    <div class="answer-line"><span class="num">4.</span><span class="pts-tag">[2pt]</span><span class="blank"></span><span class="check"></span></div>
-    <div class="answer-line"><span class="num">5.</span><span class="pts-tag">[2pt]</span><span class="blank"></span><span class="check"></span></div>
-    <div class="answer-line"><span class="num">6.</span><span class="pts-tag">[2pt]</span><span class="blank"></span><span class="check"></span></div>
-    <div class="answer-line"><span class="num">7.</span><span class="pts-tag">[2pt]</span><span class="blank"></span><span class="check"></span></div>
-    <div class="answer-line"><span class="num">8.</span><span class="pts-tag">[2pt]</span><span class="blank"></span><span class="check"></span></div>
-    <div class="answer-line"><span class="num">9.</span><span class="pts-tag">[2pt]</span><span class="blank"></span><span class="check"></span></div>
-    <div class="answer-line"><span class="num">10.</span><span class="pts-tag">[2pt]</span><span class="blank"></span><span class="check"></span></div>
+    <div class="answer-line"><span class="num">1</span><span class="pt-pill">2pt</span><span class="blank"></span><span class="check"></span></div>
+    <div class="answer-line"><span class="num">2</span><span class="pt-pill">2pt</span><span class="blank"></span><span class="check"></span></div>
+    <div class="answer-line"><span class="num">3</span><span class="pt-pill">2pt</span><span class="blank"></span><span class="check"></span></div>
+    <div class="answer-line"><span class="num">4</span><span class="pt-pill">2pt</span><span class="blank"></span><span class="check"></span></div>
+    <div class="answer-line"><span class="num">5</span><span class="pt-pill">2pt</span><span class="blank"></span><span class="check"></span></div>
+    <div class="answer-line"><span class="num">6</span><span class="pt-pill">2pt</span><span class="blank"></span><span class="check"></span></div>
+    <div class="answer-line"><span class="num">7</span><span class="pt-pill">2pt</span><span class="blank"></span><span class="check"></span></div>
+    <div class="answer-line"><span class="num">8</span><span class="pt-pill">2pt</span><span class="blank"></span><span class="check"></span></div>
+    <div class="answer-line"><span class="num">9</span><span class="pt-pill">2pt</span><span class="blank"></span><span class="check"></span></div>
+    <div class="answer-line"><span class="num">10</span><span class="pt-pill">2pt</span><span class="blank"></span><span class="check"></span></div>
     <div class="round-total"><span>R1 TOTAL</span><span class="total-box">/ 20</span></div>
   </div>
 
   <!-- ROUND 2 -->
   <div class="round-block">
     <div class="round-head">
-      <span class="name">🎤 ROUND 2: FINISH THE LYRIC</span>
-      <span class="pts">2 PTS EACH · MAX 16</span>
+      <span class="name">🎤 R2 · FINISH THE LYRIC</span>
+      <span class="pts">2 PTS · MAX 16</span>
     </div>
-    <div class="answer-line"><span class="num">1.</span><span class="pts-tag">[2pt]</span><span class="blank"></span><span class="check"></span></div>
-    <div class="answer-line"><span class="num">2.</span><span class="pts-tag">[2pt]</span><span class="blank"></span><span class="check"></span></div>
-    <div class="answer-line"><span class="num">3.</span><span class="pts-tag">[2pt]</span><span class="blank"></span><span class="check"></span></div>
-    <div class="answer-line"><span class="num">4.</span><span class="pts-tag">[2pt]</span><span class="blank"></span><span class="check"></span></div>
-    <div class="answer-line"><span class="num">5.</span><span class="pts-tag">[2pt]</span><span class="blank"></span><span class="check"></span></div>
-    <div class="answer-line"><span class="num">6.</span><span class="pts-tag">[2pt]</span><span class="blank"></span><span class="check"></span></div>
-    <div class="answer-line"><span class="num">7.</span><span class="pts-tag">[2pt]</span><span class="blank"></span><span class="check"></span></div>
-    <div class="answer-line"><span class="num">8.</span><span class="pts-tag">[2pt]</span><span class="blank"></span><span class="check"></span></div>
+    <div class="answer-line"><span class="num">1</span><span class="pt-pill">2pt</span><span class="blank"></span><span class="check"></span></div>
+    <div class="answer-line"><span class="num">2</span><span class="pt-pill">2pt</span><span class="blank"></span><span class="check"></span></div>
+    <div class="answer-line"><span class="num">3</span><span class="pt-pill">2pt</span><span class="blank"></span><span class="check"></span></div>
+    <div class="answer-line"><span class="num">4</span><span class="pt-pill">2pt</span><span class="blank"></span><span class="check"></span></div>
+    <div class="answer-line"><span class="num">5</span><span class="pt-pill">2pt</span><span class="blank"></span><span class="check"></span></div>
+    <div class="answer-line"><span class="num">6</span><span class="pt-pill">2pt</span><span class="blank"></span><span class="check"></span></div>
+    <div class="answer-line"><span class="num">7</span><span class="pt-pill">2pt</span><span class="blank"></span><span class="check"></span></div>
+    <div class="answer-line"><span class="num">8</span><span class="pt-pill">2pt</span><span class="blank"></span><span class="check"></span></div>
     <div class="round-total"><span>R2 TOTAL</span><span class="total-box">/ 16</span></div>
   </div>
 
-  <!-- ROUND 3 -->
-  <div class="round-block">
+  <!-- ROUND 3 (full width — 13 questions) -->
+  <div class="round-block span-2">
     <div class="round-head">
-      <span class="name">📺 ROUND 3: FRIENDS + 90s TV</span>
-      <span class="pts">1–2 PTS · MAX 15</span>
+      <span class="name">📺 R3 · FRIENDS + 90s TV/MOVIES</span>
+      <span class="pts">1–2 PTS · MAX 15 · ★ = 2pt</span>
     </div>
-    <div class="answer-line"><span class="num">1.</span><span class="pts-tag">[2pt★]</span><span class="blank"></span><span class="check"></span></div>
-    <div class="answer-line"><span class="num">2.</span><span class="pts-tag">[1pt]</span><span class="blank"></span><span class="check"></span></div>
-    <div class="answer-line"><span class="num">3.</span><span class="pts-tag">[1pt]</span><span class="blank"></span><span class="check"></span></div>
-    <div class="answer-line"><span class="num">4.</span><span class="pts-tag">[1pt]</span><span class="blank"></span><span class="check"></span></div>
-    <div class="answer-line"><span class="num">5.</span><span class="pts-tag">[1pt]</span><span class="blank"></span><span class="check"></span></div>
-    <div class="answer-line"><span class="num">6.</span><span class="pts-tag">[2pt★]</span><span class="blank"></span><span class="check"></span></div>
-    <div class="answer-line"><span class="num">7.</span><span class="pts-tag">[1pt]</span><span class="blank"></span><span class="check"></span></div>
-    <div class="answer-line"><span class="num">8.</span><span class="pts-tag">[1pt]</span><span class="blank"></span><span class="check"></span></div>
-    <div class="answer-line"><span class="num">9.</span><span class="pts-tag">[2pt★]</span><span class="blank"></span><span class="check"></span></div>
-    <div class="answer-line"><span class="num">10.</span><span class="pts-tag">[1pt]</span><span class="blank"></span><span class="check"></span></div>
-    <div class="answer-line"><span class="num">11.</span><span class="pts-tag">[1pt]</span><span class="blank"></span><span class="check"></span></div>
-    <div class="answer-line"><span class="num">12.</span><span class="pts-tag">[1pt]</span><span class="blank"></span><span class="check"></span></div>
-    <div class="answer-line"><span class="num">13.</span><span class="pts-tag">[1pt]</span><span class="blank"></span><span class="check"></span></div>
+    <div class="columns" style="gap:14px;">
+      <div>
+        <div class="answer-line"><span class="num">1</span><span class="pt-pill star">2pt★</span><span class="blank"></span><span class="check"></span></div>
+        <div class="answer-line"><span class="num">2</span><span class="pt-pill">1pt</span><span class="blank"></span><span class="check"></span></div>
+        <div class="answer-line"><span class="num">3</span><span class="pt-pill">1pt</span><span class="blank"></span><span class="check"></span></div>
+        <div class="answer-line"><span class="num">4</span><span class="pt-pill">1pt</span><span class="blank"></span><span class="check"></span></div>
+        <div class="answer-line"><span class="num">5</span><span class="pt-pill">1pt</span><span class="blank"></span><span class="check"></span></div>
+        <div class="answer-line"><span class="num">6</span><span class="pt-pill star">2pt★</span><span class="blank"></span><span class="check"></span></div>
+        <div class="answer-line"><span class="num">7</span><span class="pt-pill">1pt</span><span class="blank"></span><span class="check"></span></div>
+      </div>
+      <div>
+        <div class="answer-line"><span class="num">8</span><span class="pt-pill">1pt</span><span class="blank"></span><span class="check"></span></div>
+        <div class="answer-line"><span class="num">9</span><span class="pt-pill star">2pt★</span><span class="blank"></span><span class="check"></span></div>
+        <div class="answer-line"><span class="num">10</span><span class="pt-pill">1pt</span><span class="blank"></span><span class="check"></span></div>
+        <div class="answer-line"><span class="num">11</span><span class="pt-pill">1pt</span><span class="blank"></span><span class="check"></span></div>
+        <div class="answer-line"><span class="num">12</span><span class="pt-pill">1pt</span><span class="blank"></span><span class="check"></span></div>
+        <div class="answer-line"><span class="num">13</span><span class="pt-pill">1pt</span><span class="blank"></span><span class="check"></span></div>
+      </div>
+    </div>
     <div class="round-total"><span>R3 TOTAL</span><span class="total-box">/ 15</span></div>
   </div>
 
   <!-- ROUND 4 -->
   <div class="round-block">
     <div class="round-head">
-      <span class="name">⚡ ROUND 4: RAPID FIRE</span>
-      <span class="pts">1 PT EACH · MAX 8</span>
+      <span class="name">⚡ R4 · RAPID FIRE</span>
+      <span class="pts">1 PT · MAX 8</span>
     </div>
-    <div class="answer-line"><span class="num">1.</span><span class="pts-tag">[1pt]</span><span class="blank"></span><span class="check"></span></div>
-    <div class="answer-line"><span class="num">2.</span><span class="pts-tag">[1pt]</span><span class="blank"></span><span class="check"></span></div>
-    <div class="answer-line"><span class="num">3.</span><span class="pts-tag">[1pt]</span><span class="blank"></span><span class="check"></span></div>
-    <div class="answer-line"><span class="num">4.</span><span class="pts-tag">[1pt]</span><span class="blank"></span><span class="check"></span></div>
-    <div class="answer-line"><span class="num">5.</span><span class="pts-tag">[1pt]</span><span class="blank"></span><span class="check"></span></div>
-    <div class="answer-line"><span class="num">6.</span><span class="pts-tag">[1pt]</span><span class="blank"></span><span class="check"></span></div>
-    <div class="answer-line"><span class="num">7.</span><span class="pts-tag">[1pt]</span><span class="blank"></span><span class="check"></span></div>
-    <div class="answer-line"><span class="num">8.</span><span class="pts-tag">[1pt]</span><span class="blank"></span><span class="check"></span></div>
+    <div class="answer-line"><span class="num">1</span><span class="pt-pill">1pt</span><span class="blank"></span><span class="check"></span></div>
+    <div class="answer-line"><span class="num">2</span><span class="pt-pill">1pt</span><span class="blank"></span><span class="check"></span></div>
+    <div class="answer-line"><span class="num">3</span><span class="pt-pill">1pt</span><span class="blank"></span><span class="check"></span></div>
+    <div class="answer-line"><span class="num">4</span><span class="pt-pill">1pt</span><span class="blank"></span><span class="check"></span></div>
+    <div class="answer-line"><span class="num">5</span><span class="pt-pill">1pt</span><span class="blank"></span><span class="check"></span></div>
+    <div class="answer-line"><span class="num">6</span><span class="pt-pill">1pt</span><span class="blank"></span><span class="check"></span></div>
+    <div class="answer-line"><span class="num">7</span><span class="pt-pill">1pt</span><span class="blank"></span><span class="check"></span></div>
+    <div class="answer-line"><span class="num">8</span><span class="pt-pill">1pt</span><span class="blank"></span><span class="check"></span></div>
     <div class="round-total"><span>R4 TOTAL</span><span class="total-box">/ 8</span></div>
   </div>
 
   <!-- ROUND 5 -->
   <div class="round-block">
     <div class="round-head">
-      <span class="name">🎧 ROUND 5: WHO AM I?</span>
-      <span class="pts">2 PTS EACH · MAX 16</span>
+      <span class="name">🎧 R5 · WHO AM I?</span>
+      <span class="pts">2 PTS · MAX 16</span>
     </div>
-    <div class="answer-line"><span class="num">1.</span><span class="pts-tag">[2pt]</span><span class="blank"></span><span class="check"></span></div>
-    <div class="answer-line"><span class="num">2.</span><span class="pts-tag">[2pt]</span><span class="blank"></span><span class="check"></span></div>
-    <div class="answer-line"><span class="num">3.</span><span class="pts-tag">[2pt]</span><span class="blank"></span><span class="check"></span></div>
-    <div class="answer-line"><span class="num">4.</span><span class="pts-tag">[2pt]</span><span class="blank"></span><span class="check"></span></div>
-    <div class="answer-line"><span class="num">5.</span><span class="pts-tag">[2pt]</span><span class="blank"></span><span class="check"></span></div>
-    <div class="answer-line"><span class="num">6.</span><span class="pts-tag">[2pt]</span><span class="blank"></span><span class="check"></span></div>
-    <div class="answer-line"><span class="num">7.</span><span class="pts-tag">[2pt]</span><span class="blank"></span><span class="check"></span></div>
-    <div class="answer-line"><span class="num">8.</span><span class="pts-tag">[2pt]</span><span class="blank"></span><span class="check"></span></div>
+    <div class="answer-line"><span class="num">1</span><span class="pt-pill">2pt</span><span class="blank"></span><span class="check"></span></div>
+    <div class="answer-line"><span class="num">2</span><span class="pt-pill">2pt</span><span class="blank"></span><span class="check"></span></div>
+    <div class="answer-line"><span class="num">3</span><span class="pt-pill">2pt</span><span class="blank"></span><span class="check"></span></div>
+    <div class="answer-line"><span class="num">4</span><span class="pt-pill">2pt</span><span class="blank"></span><span class="check"></span></div>
+    <div class="answer-line"><span class="num">5</span><span class="pt-pill">2pt</span><span class="blank"></span><span class="check"></span></div>
+    <div class="answer-line"><span class="num">6</span><span class="pt-pill">2pt</span><span class="blank"></span><span class="check"></span></div>
+    <div class="answer-line"><span class="num">7</span><span class="pt-pill">2pt</span><span class="blank"></span><span class="check"></span></div>
+    <div class="answer-line"><span class="num">8</span><span class="pt-pill">2pt</span><span class="blank"></span><span class="check"></span></div>
     <div class="round-total"><span>R5 TOTAL</span><span class="total-box">/ 16</span></div>
   </div>
 
-  <!-- FINAL FIVE -->
-  <div class="round-block" style="border-color:#fa243c; border-width:3px;">
+  <!-- FINAL FIVE — full width, highlighted -->
+  <div class="round-block final-five span-2">
     <div class="round-head">
-      <span class="name">🏆 THE FINAL FIVE — DOUBLE STAKES</span>
+      <span class="name">🏆 ★ THE FINAL FIVE ★ — DOUBLE STAKES</span>
       <span class="pts">4 PTS EACH · MAX 20</span>
     </div>
-    <div class="answer-line"><span class="num">1.</span><span class="pts-tag">[4pt]</span><span class="blank"></span><span class="check"></span></div>
-    <div class="answer-line"><span class="num">2.</span><span class="pts-tag">[4pt]</span><span class="blank"></span><span class="check"></span></div>
-    <div class="answer-line"><span class="num">3.</span><span class="pts-tag">[4pt]</span><span class="blank"></span><span class="check"></span></div>
-    <div class="answer-line"><span class="num">4.</span><span class="pts-tag">[4pt]</span><span class="blank"></span><span class="check"></span></div>
-    <div class="answer-line"><span class="num">5.</span><span class="pts-tag">[4pt]</span><span class="blank"></span><span class="check"></span></div>
-    <div class="round-total"><span>FINAL TOTAL</span><span class="total-box">/ 20</span></div>
+    <div class="columns" style="gap:14px;">
+      <div>
+        <div class="answer-line"><span class="num">1</span><span class="pt-pill">4pt</span><span class="blank"></span><span class="check"></span></div>
+        <div class="answer-line"><span class="num">2</span><span class="pt-pill">4pt</span><span class="blank"></span><span class="check"></span></div>
+        <div class="answer-line"><span class="num">3</span><span class="pt-pill">4pt</span><span class="blank"></span><span class="check"></span></div>
+      </div>
+      <div>
+        <div class="answer-line"><span class="num">4</span><span class="pt-pill">4pt</span><span class="blank"></span><span class="check"></span></div>
+        <div class="answer-line"><span class="num">5</span><span class="pt-pill">4pt</span><span class="blank"></span><span class="check"></span></div>
+      </div>
+    </div>
+    <div class="round-total"><span>FINAL FIVE TOTAL</span><span class="total-box">/ 20</span></div>
   </div>
 
 </div>
 
 <div class="footer">
   <div class="grand-total">
-    <span class="label">★ GRAND TOTAL</span>
+    <span class="label">★ GRAND TOTAL ★</span>
     <span class="box">/ 95</span>
   </div>
-  <p style="margin-top:10px; font-family:'VT323',monospace; font-size:14px; color:#666; letter-spacing:1px;">
-    🌶️ HAPPY BIRTHDAY CAITLYN · MAY 2 🌶️
-  </p>
+  <div class="bday">🎉 HAPPY BIRTHDAY CAITLYN 🎉</div>
 </div>
 
 </body>
