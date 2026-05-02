@@ -632,8 +632,8 @@
 <!-- Host controls (right) -->
 <div class="host-controls">
   <button class="host-btn" onclick="prevQ()">← PREV</button>
-  <button class="host-btn reveal" id="reveal-btn" onclick="toggleAnswer()">REVEAL ✓</button>
   <button class="host-btn" onclick="nextQ()">NEXT →</button>
+  <button class="host-btn reveal" id="reveal-all-btn" onclick="enterRevealPhase()">★ REVEAL ANSWERS ★</button>
   <button class="host-btn" style="background:#39ff14; color:#0a0224; border-color:#39ff14;" onclick="openScoring()">📊 SCORE ROUND</button>
   <button class="host-btn" onclick="nextRound()">NEXT ROUND ▶</button>
   <button class="host-btn danger" onclick="endGame()">END</button>
@@ -668,7 +668,7 @@
   <div class="answer hidden" id="answer"></div>
 </div>
 
-<div class="keyboard-hint">SPACE = reveal · ← → nav · M = play music · S = score round · N = next round · T = add team · P = party deets</div>
+<div class="keyboard-hint">SPACE / → = next · ← = back · M = play music · S = score · N = next round · T = add team · P = party deets</div>
 
 <!-- Scoreboard -->
 <div class="scoreboard">
@@ -833,6 +833,7 @@ let state = loadState() || {
   roundIdx: 0,
   qIdx: 0,
   showAnswer: false,
+  phase: 'ask',  // 'ask' = read questions only, 'reveal' = walk through answers
   teams: [
     { name: "Team Friends", score: 0 },
     { name: "Team Tamagotchi", score: 0 },
@@ -874,14 +875,20 @@ function render() {
   const q = round.questions[state.qIdx];
 
   document.getElementById('round-badge').textContent =
-    `ROUND ${state.roundIdx + 1} / ${ROUNDS.length}`;
+    `ROUND ${state.roundIdx + 1} / ${ROUNDS.length}` +
+    (state.phase === 'reveal' ? ' · REVEAL' : '');
   document.getElementById('round-title').textContent = round.name;
-  document.getElementById('round-sub').textContent = round.sub;
+  document.getElementById('round-sub').textContent =
+    state.phase === 'reveal' ? '★ ANSWERS REVEAL ★' : round.sub;
 
+  // Counter shows phase + position
+  const phaseLabel = state.phase === 'reveal' ? '★ REVEAL ★' : (round.isFinalFive ? '★ FINAL FIVE ★' : 'Q');
   document.getElementById('q-counter').textContent =
-    round.isFinalFive
-      ? `★ FINAL FIVE · ${state.qIdx + 1} of ${round.questions.length} ★`
-      : `Question ${state.qIdx + 1} of ${round.questions.length}`;
+    state.phase === 'reveal'
+      ? `★ REVEAL ${state.qIdx + 1} of ${round.questions.length} ★`
+      : (round.isFinalFive
+          ? `★ FINAL FIVE · ${state.qIdx + 1} of ${round.questions.length} ★`
+          : `Question ${state.qIdx + 1} of ${round.questions.length}`);
   const pts = q.pts || round.pts;
   document.getElementById('q-points').textContent =
     `+${pts} ${pts === 1 ? 'POINT' : 'POINTS'}` +
@@ -892,25 +899,24 @@ function render() {
     const ansEl = document.getElementById('answer');
     ansEl.textContent = q.a;
     ansEl.style.whiteSpace = 'pre-wrap';
-    ansEl.classList.toggle('hidden', !state.showAnswer);
+    // Answer visibility is driven by phase OR explicit showAnswer toggle
+    const inReveal = state.phase === 'reveal' || state.showAnswer;
+    ansEl.classList.toggle('hidden', !inReveal);
 
     // Music questions get a YouTube clip player.
-    // PRE-REVEAL: plays a hand-picked NON-SPOILER intro snippet (start→end seconds).
-    // POST-REVEAL: plays from `fullStart` (chorus / iconic moment) as celebration.
+    // ASK PHASE: plays a hand-picked NON-SPOILER intro snippet (start→end).
+    // REVEAL PHASE / showAnswer: plays from `fullStart` (chorus, celebration).
     const playerRow = document.getElementById('player-row');
     const playBtn = document.getElementById('play-btn');
     const trackMeta = document.getElementById('track-meta');
-    // Stop any previous YouTube playback when navigating
     ytStop();
     playBtn.classList.remove('playing');
-    playBtn.textContent = state.showAnswer ? '▶ PLAY THE SONG' : '▶ PLAY A FEW NOTES';
+    playBtn.textContent = inReveal ? '▶ PLAY THE SONG' : '▶ PLAY A FEW NOTES';
 
     if (q.yt && (q.yt.start != null || q.yt.fullStart != null)) {
       playerRow.style.display = 'flex';
-      // Pre-reveal: only show the player if there's a non-spoiler clip configured
-      // (some questions might be reveal-only — Round 2 lyric finishers, Final Five)
       const hasIntroClip = q.yt.start != null && q.yt.end != null;
-      if (state.showAnswer) {
+      if (inReveal) {
         trackMeta.textContent = (q.am || '').toUpperCase();
       } else if (hasIntroClip) {
         trackMeta.textContent = `~${q.yt.end - q.yt.start} sec intro · safe snippet`;
@@ -985,25 +991,62 @@ function escapeHtml(s) {
 
 function nextQ() {
   const round = ROUNDS[state.roundIdx];
+  ytStop();
   if (state.qIdx < round.questions.length - 1) {
+    // Still more questions in this phase
     state.qIdx++;
     state.showAnswer = false;
     render();
+    // Auto-play music on reveal phase navigation
+    autoPlayIfReveal();
   } else {
-    nextRound();
+    // Last question of phase
+    if (state.phase === 'ask') {
+      // End of ASK phase → switch to REVEAL phase, restart at Q1
+      enterRevealPhase();
+    } else {
+      // End of REVEAL phase → pop scoring modal, then advance round
+      openScoring();
+    }
   }
 }
 
 function prevQ() {
+  ytStop();
   if (state.qIdx > 0) {
     state.qIdx--;
     state.showAnswer = false;
     render();
-  } else if (state.roundIdx > 0) {
-    state.roundIdx--;
+    autoPlayIfReveal();
+  } else if (state.phase === 'reveal') {
+    // Back from start of reveal → return to last question of ask phase
+    state.phase = 'ask';
     state.qIdx = ROUNDS[state.roundIdx].questions.length - 1;
     state.showAnswer = false;
     render();
+  } else if (state.roundIdx > 0) {
+    state.roundIdx--;
+    state.phase = 'ask';
+    state.qIdx = ROUNDS[state.roundIdx].questions.length - 1;
+    state.showAnswer = false;
+    render();
+  }
+}
+
+function enterRevealPhase() {
+  state.phase = 'reveal';
+  state.qIdx = 0;
+  state.showAnswer = false;
+  render();
+  autoPlayIfReveal();
+}
+
+function autoPlayIfReveal() {
+  if (state.phase !== 'reveal') return;
+  const round = ROUNDS[state.roundIdx];
+  const q = round && round.questions[state.qIdx];
+  if (q && q.yt) {
+    setTimeout(() => ytLoadAndPlay(q.yt, true), 250);
   }
 }
 
@@ -1013,13 +1056,12 @@ function nextRound() {
 }
 
 function _advanceToNextRound() {
-  // Stop any audio
-  const audioEl = document.getElementById('audio-player');
-  if (audioEl) { audioEl.pause(); audioEl.currentTime = 0; }
+  ytStop();
   if (state.roundIdx < ROUNDS.length - 1) {
     state.roundIdx++;
     state.qIdx = 0;
     state.showAnswer = false;
+    state.phase = 'ask';   // reset phase for new round
     render();
   } else {
     endGame();
@@ -1295,7 +1337,8 @@ document.addEventListener('keydown', (e) => {
     return;
   }
   if (e.target.tagName === 'INPUT') return;
-  if (e.code === 'Space') { e.preventDefault(); toggleAnswer(); }
+  // SPACE = next (in ask phase: next question · in reveal phase: next answer)
+  if (e.code === 'Space') { e.preventDefault(); nextQ(); }
   else if (e.code === 'ArrowRight') nextQ();
   else if (e.code === 'ArrowLeft') prevQ();
   else if (e.key === 'n' || e.key === 'N') nextRound();
