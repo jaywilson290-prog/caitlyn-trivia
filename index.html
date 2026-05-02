@@ -670,6 +670,19 @@
   <div id="yt-player-wrap" style="position:fixed; left:-9999px; top:0; width:320px; height:180px; pointer-events:none; overflow:hidden;">
     <div id="yt-player"></div>
   </div>
+
+<!-- REVEAL SUMMARY: shows ALL Q+A for the current round on one page -->
+<div id="reveal-summary" style="display:none; position:fixed; top:70px; bottom:200px; left:0; right:0; padding:20px 24px 16px; overflow-y:auto;">
+  <div id="reveal-header" style="text-align:center; margin-bottom:16px;">
+    <div id="reveal-round-num" style="font-family:'Press Start 2P', monospace; font-size:14px; color:var(--neon-green); letter-spacing:3px; margin-bottom:6px; text-shadow:0 0 12px var(--neon-green);"></div>
+    <div id="reveal-round-name" style="font-family:'Bebas Neue', sans-serif; font-size:38px; color:var(--neon-yellow); letter-spacing:4px; text-shadow:3px 3px 0 #000, 0 0 20px var(--neon-yellow);"></div>
+    <div style="font-family:'VT323', monospace; font-size:18px; color:rgba(255,255,255,0.6); margin-top:4px;">★ Read each one out · grade as you go · score at the bottom ★</div>
+  </div>
+  <div id="reveal-list" style="max-width:1100px; margin:0 auto;"></div>
+  <div style="text-align:center; margin:18px 0 8px;">
+    <button class="host-btn reveal" style="font-size:18px; padding:18px 36px;" onclick="openScoring()">📊 SCORE THIS ROUND ▶</button>
+  </div>
+</div>
   <div class="answer hidden" id="answer"></div>
 </div>
 
@@ -879,17 +892,24 @@ function render() {
   if (!round) { return endGame(); }
   const q = round.questions[state.qIdx];
 
+  // ── REVEAL PHASE: render the summary page (ALL Q+A on one screen) ──
+  if (state.phase === 'reveal') {
+    renderRevealSummary();
+    renderTeams();
+    saveState();
+    return;
+  }
+
+  // ASK phase — single-question stage
+  document.getElementById('reveal-summary').style.display = 'none';
+  document.getElementById('stage').style.display = 'flex';
+
   const rb = document.getElementById('round-badge');
-  rb.textContent = state.phase === 'reveal'
-    ? `★ R${state.roundIdx + 1} REVEAL ★`
-    : `ROUND ${state.roundIdx + 1} / ${ROUNDS.length}`;
-  rb.style.background = state.phase === 'reveal' ? 'var(--neon-green)' : 'black';
-  rb.style.color = state.phase === 'reveal' ? '#0a0224' : 'var(--neon-yellow)';
+  rb.textContent = `ROUND ${state.roundIdx + 1} / ${ROUNDS.length}`;
+  rb.style.background = 'black';
+  rb.style.color = 'var(--neon-yellow)';
   document.getElementById('round-title').textContent = round.name;
-  document.getElementById('round-sub').textContent =
-    state.phase === 'reveal'
-      ? `★ ANSWER ${state.qIdx + 1} OF ${round.questions.length} ★`
-      : round.sub;
+  document.getElementById('round-sub').textContent = round.sub;
 
   // Counter shows phase + position
   const phaseLabel = state.phase === 'reveal' ? '★ REVEAL ★' : (round.isFinalFive ? '★ FINAL FIVE ★' : 'Q');
@@ -950,6 +970,65 @@ function render() {
   saveState();
 }
 
+function renderRevealSummary() {
+  const round = ROUNDS[state.roundIdx];
+  document.getElementById('stage').style.display = 'none';
+  document.getElementById('reveal-summary').style.display = 'block';
+
+  const rb = document.getElementById('round-badge');
+  rb.textContent = `★ R${state.roundIdx + 1} REVEAL ★`;
+  rb.style.background = 'var(--neon-green)';
+  rb.style.color = '#0a0224';
+
+  document.getElementById('reveal-round-num').textContent =
+    `★ ROUND ${state.roundIdx + 1} ANSWERS ★`;
+  document.getElementById('reveal-round-name').textContent = round.name.toUpperCase();
+
+  const list = document.getElementById('reveal-list');
+  list.innerHTML = '';
+  round.questions.forEach((q, i) => {
+    const card = document.createElement('div');
+    card.style.cssText = 'display:flex; align-items:center; gap:16px; padding:14px 18px; margin-bottom:8px; background:rgba(0,0,0,0.55); border:2px solid rgba(255,230,0,0.3); border-radius:6px;';
+    const num = document.createElement('div');
+    num.style.cssText = 'font-family:\'Press Start 2P\', monospace; font-size:18px; color:var(--neon-yellow); width:38px; text-align:center; flex-shrink:0;';
+    num.textContent = (i + 1);
+    const body = document.createElement('div');
+    body.style.cssText = 'flex:1; min-width:0;';
+    const qLine = document.createElement('div');
+    qLine.style.cssText = 'font-family:\'Bebas Neue\', sans-serif; font-size:20px; color:rgba(255,248,231,0.85); line-height:1.2; margin-bottom:4px; letter-spacing:1px;';
+    qLine.textContent = q.q.replace(/\n/g, ' · ').slice(0, 120);
+    const aLine = document.createElement('div');
+    aLine.style.cssText = 'font-family:\'Bebas Neue\', sans-serif; font-size:24px; color:var(--neon-green); letter-spacing:2px; text-shadow:0 0 12px rgba(57,255,20,0.6);';
+    aLine.innerHTML = '→ ' + escapeHtml(q.a).split('\n').join('<br/>');
+    body.appendChild(qLine);
+    body.appendChild(aLine);
+    card.appendChild(num);
+    card.appendChild(body);
+    if (q.yt && q.yt.id) {
+      const playBtn = document.createElement('button');
+      playBtn.style.cssText = 'font-family:\'Press Start 2P\', monospace; font-size:11px; padding:10px 14px; background:linear-gradient(135deg,#39ff14,#00f0ff); color:#0a0224; border:3px solid white; border-radius:6px; cursor:pointer; flex-shrink:0; box-shadow:0 0 12px rgba(57,255,20,0.5);';
+      playBtn.textContent = '▶ PLAY';
+      playBtn.onclick = () => {
+        ytStop();
+        if (!ytReady) {
+          ytQueuedAction = () => playSongOnReveal(q.yt);
+          return;
+        }
+        playSongOnReveal(q.yt);
+      };
+      card.appendChild(playBtn);
+    }
+    list.appendChild(card);
+  });
+}
+
+function playSongOnReveal(yt) {
+  if (!ytReady || !ytPlayer) return;
+  const startSec = yt.fullStart != null ? yt.fullStart : (yt.start || 0);
+  ytPlayer.loadVideoById({ videoId: yt.id, startSeconds: startSec });
+  console.log('[trivia] reveal-page play', yt.id, 'from', startSec);
+}
+
 function renderTeams() {
   const container = document.getElementById('teams');
   container.innerHTML = '';
@@ -1008,43 +1087,37 @@ function escapeHtml(s) {
 function nextQ() {
   const round = ROUNDS[state.roundIdx];
   ytStop();
+  if (state.phase === 'reveal') {
+    // From REVEAL summary → open scoring modal
+    openScoring();
+    return;
+  }
   if (state.qIdx < round.questions.length - 1) {
-    // Still more questions in this phase
+    // Still more questions in this round
     state.qIdx++;
-    state.showAnswer = false;
     render();
-    // Auto-play music on reveal phase navigation
-    autoPlayIfReveal();
   } else {
-    // Last question of phase
-    if (state.phase === 'ask') {
-      // End of ASK phase → switch to REVEAL phase, restart at Q1
-      enterRevealPhase();
-    } else {
-      // End of REVEAL phase → pop scoring modal, then advance round
-      openScoring();
-    }
+    // Last question of ASK phase → switch to REVEAL summary
+    enterRevealPhase();
   }
 }
 
 function prevQ() {
   ytStop();
-  if (state.qIdx > 0) {
-    state.qIdx--;
-    state.showAnswer = false;
-    render();
-    autoPlayIfReveal();
-  } else if (state.phase === 'reveal') {
-    // Back from start of reveal → return to last question of ask phase
+  if (state.phase === 'reveal') {
+    // From REVEAL summary → return to last ASK question
     state.phase = 'ask';
     state.qIdx = ROUNDS[state.roundIdx].questions.length - 1;
-    state.showAnswer = false;
+    render();
+    return;
+  }
+  if (state.qIdx > 0) {
+    state.qIdx--;
     render();
   } else if (state.roundIdx > 0) {
     state.roundIdx--;
     state.phase = 'ask';
     state.qIdx = ROUNDS[state.roundIdx].questions.length - 1;
-    state.showAnswer = false;
     render();
   }
 }
@@ -1052,9 +1125,7 @@ function prevQ() {
 function enterRevealPhase() {
   state.phase = 'reveal';
   state.qIdx = 0;
-  state.showAnswer = false;
   render();
-  autoPlayIfReveal();
 }
 
 function autoPlayIfReveal() {
@@ -1265,6 +1336,7 @@ document.head.appendChild(ytTag);
 window.onYouTubeIframeAPIReady = function() {
   console.log('[trivia] YT IFrame API loaded — building player');
   ytPlayer = new YT.Player('yt-player', {
+    host: 'https://www.youtube-nocookie.com',  // privacy-enhanced + fewer ads
     height: '180', width: '320', videoId: '',
     playerVars: {
       autoplay: 0, controls: 0, disablekb: 1, fs: 0,
