@@ -663,8 +663,10 @@
     <button id="play-btn" class="play-btn" onclick="togglePlay()" title="Play / Pause (M)">▶ PLAY A FEW NOTES</button>
     <div id="track-meta" style="font-family:'VT323', monospace; font-size:18px; color:rgba(255,248,231,0.6);"></div>
   </div>
-  <!-- Hidden YouTube IFrame API player (1×1 pixel, audio-only mode) -->
-  <div id="yt-player" style="position:fixed; bottom:-1px; right:-1px; width:1px; height:1px; opacity:0; pointer-events:none;"></div>
+  <!-- Hidden YouTube IFrame API player — 1px box. Plays ONLY on host's
+       button click (user gesture = browser allows hidden playback). No
+       autoplay, no popup. Hand-picked timestamps ensure non-spoiler intros. -->
+  <div id="yt-player" style="position:fixed; bottom:-1px; right:-1px; width:1px; height:1px; opacity:0; pointer-events:none; overflow:hidden;"></div>
   <div class="answer hidden" id="answer"></div>
 </div>
 
@@ -904,8 +906,12 @@ function render() {
     ansEl.classList.toggle('hidden', !inReveal);
 
     // Music questions get a YouTube clip player.
-    // ASK PHASE: plays a hand-picked NON-SPOILER intro snippet (start→end).
-    // REVEAL PHASE / showAnswer: plays from `fullStart` (chorus, celebration).
+    // PRE-REVEAL: plays a hand-picked NON-SPOILER intro snippet (start→end)
+    //             ONLY if defined. Round 2 has no intro = no pre-reveal clip.
+    // POST-REVEAL: plays from fullStart (chorus, celebration). All music
+    //             questions get a button to play.
+    // Music plays only when host clicks ▶ (user gesture; required by browsers
+    // to allow hidden-iframe playback).
     const playerRow = document.getElementById('player-row');
     const playBtn = document.getElementById('play-btn');
     const trackMeta = document.getElementById('track-meta');
@@ -913,16 +919,17 @@ function render() {
     playBtn.classList.remove('playing');
     playBtn.textContent = inReveal ? '▶ PLAY THE SONG' : '▶ PLAY A FEW NOTES';
 
-    if (q.yt && (q.yt.start != null || q.yt.fullStart != null)) {
+    const hasIntroClip = q.yt && q.yt.start != null && q.yt.end != null;
+    const hasFullClip  = q.yt && q.yt.fullStart != null;
+    const showInReveal = inReveal && (hasFullClip || hasIntroClip);
+    const showPreReveal = !inReveal && hasIntroClip;
+
+    if (showInReveal || showPreReveal) {
       playerRow.style.display = 'flex';
-      const hasIntroClip = q.yt.start != null && q.yt.end != null;
       if (inReveal) {
         trackMeta.textContent = (q.am || '').toUpperCase();
-      } else if (hasIntroClip) {
-        trackMeta.textContent = `~${q.yt.end - q.yt.start} sec intro · safe snippet`;
       } else {
-        // No pre-reveal clip — hide the player until reveal
-        playerRow.style.display = 'none';
+        trackMeta.textContent = `~${q.yt.end - q.yt.start} sec intro · no spoilers`;
       }
     } else {
       playerRow.style.display = 'none';
@@ -1042,12 +1049,9 @@ function enterRevealPhase() {
 }
 
 function autoPlayIfReveal() {
-  if (state.phase !== 'reveal') return;
-  const round = ROUNDS[state.roundIdx];
-  const q = round && round.questions[state.qIdx];
-  if (q && q.yt) {
-    setTimeout(() => ytLoadAndPlay(q.yt, true), 250);
-  }
+  // No autoplay — Chrome/Safari/Firefox all block hidden-iframe autoplay.
+  // Host clicks ▶ PLAY THE SONG to play. (Their click is the user gesture
+  // that browsers require.)
 }
 
 function nextRound() {
@@ -1124,16 +1128,9 @@ function applyRoundScores() {
 
 function toggleAnswer() {
   state.showAnswer = !state.showAnswer;
-  // Always stop any current playback first
+  // Stop any current playback when navigating; host re-clicks ▶ to play
   ytStop();
   render();
-  // If we just revealed the answer to a music question, auto-play the
-  // chorus / iconic moment as the celebration.
-  const round = ROUNDS[state.roundIdx];
-  const q = round && round.questions[state.qIdx];
-  if (state.showAnswer && q && q.yt) {
-    setTimeout(() => ytLoadAndPlay(q.yt, true), 250);
-  }
 }
 
 function adjustScore(idx, delta) {
