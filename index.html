@@ -87,18 +87,16 @@
   }
 
   /* ─── MAIN STAGE ─── */
-  /* Buttons are now BELOW (above scoreboard), so stage is full-width.
-     Reserve bottom space for the host-controls bar (~70px). */
   .stage {
     position: fixed;
     top: 70px;
-    bottom: 280px;       /* scoreboard 200 + controls 70 + gap */
+    bottom: 200px;
     left: 0; right: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 24px;
+    padding: 32px;
     text-align: center;
   }
 
@@ -310,39 +308,29 @@
   }
   .add-team:hover { background: rgba(255, 230, 0, 0.15); }
 
-  /* ─── HOST CONTROLS (centered horizontal bar, BELOW the stage) ─── */
+  /* ─── HOST CONTROLS (top right) ─── */
   .host-controls {
     position: fixed;
-    bottom: 210px;          /* above the scoreboard */
-    left: 50%;
-    transform: translateX(-50%);
+    top: 80px;
+    right: 16px;
     display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: center;
+    flex-direction: column;
     gap: 8px;
     z-index: 9;
-    background: rgba(0, 0, 0, 0.6);
-    padding: 8px 14px;
-    border: 2px solid rgba(255, 230, 0, 0.4);
-    border-radius: 8px;
-    backdrop-filter: blur(4px);
-    max-width: calc(100% - 32px);
   }
   .host-btn {
     font-family: 'Press Start 2P', monospace;
-    font-size: 11px;
-    padding: 10px 14px;
+    font-size: 12px;
+    padding: 12px 16px;
     background: black;
     color: var(--neon-yellow);
-    border: 2px solid var(--neon-yellow);
+    border: 3px solid var(--neon-yellow);
     cursor: pointer;
     border-radius: 4px;
     text-shadow: 0 0 6px var(--neon-yellow);
-    box-shadow: 0 0 8px rgba(255, 230, 0, 0.4);
+    box-shadow: 0 0 10px rgba(255, 230, 0, 0.5);
     text-transform: uppercase;
     letter-spacing: 1px;
-    white-space: nowrap;
   }
   .host-btn:hover { background: var(--neon-yellow); color: black; }
   .host-btn.reveal { color: var(--neon-green); border-color: var(--neon-green); text-shadow: 0 0 6px var(--neon-green); box-shadow: 0 0 10px rgba(57, 255, 20, 0.5); }
@@ -350,27 +338,27 @@
   .host-btn.danger { color: var(--neon-pink); border-color: var(--neon-pink); text-shadow: 0 0 6px var(--neon-pink); }
   .host-btn.danger:hover { background: var(--neon-pink); color: black; }
 
-  /* ─── ROUND PICKER (compact horizontal at bottom-right) ─── */
+  /* ─── ROUND PICKER (top-left tabs) ─── */
   .round-tabs {
     position: fixed;
-    bottom: 210px;
-    right: 12px;
+    top: 80px;
+    left: 16px;
     display: flex;
-    flex-direction: row;
-    gap: 4px;
+    flex-direction: column;
+    gap: 6px;
     z-index: 9;
   }
   .round-tab {
     font-family: 'Press Start 2P', monospace;
-    font-size: 9px;
-    padding: 6px 8px;
+    font-size: 11px;
+    padding: 8px 12px;
     background: rgba(0, 0, 0, 0.6);
     color: white;
     border: 2px solid var(--neon-cyan);
     cursor: pointer;
     border-radius: 4px;
-    min-width: 36px;
-    text-align: center;
+    min-width: 120px;
+    text-align: left;
     letter-spacing: 1px;
   }
   .round-tab.active {
@@ -651,30 +639,6 @@
   <button class="host-btn danger" onclick="endGame()">END</button>
 </div>
 
-<!-- Round-intro splash (3-second flash between rounds) -->
-<div id="round-intro" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.95); z-index:55; align-items:center; justify-content:center; flex-direction:column; text-align:center; cursor:pointer;" onclick="hideRoundIntro()">
-  <div id="round-intro-num" style="font-family:'Press Start 2P', monospace; font-size:24px; color:var(--neon-cyan); letter-spacing:6px; margin-bottom:18px; text-shadow:0 0 24px var(--neon-cyan);"></div>
-  <div id="round-intro-name" style="font-family:'Bebas Neue', sans-serif; font-size:88px; line-height:1; color:var(--neon-yellow); text-shadow:6px 6px 0 var(--chili-red-hot), 0 0 40px var(--neon-yellow); letter-spacing:4px; padding:0 30px;"></div>
-  <div id="round-intro-sub" style="margin-top:24px; font-family:'Press Start 2P', monospace; font-size:14px; color:var(--neon-pink); letter-spacing:3px; text-shadow:0 0 12px var(--neon-pink);"></div>
-  <div style="margin-top:48px; font-family:'VT323', monospace; font-size:18px; color:rgba(255,255,255,0.5);">click anywhere or press SPACE to begin</div>
-</div>
-
-<!-- Sudden Death Tie-Breaker Panel -->
-<div id="sudden-death-panel" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.95); z-index:50; padding:30px; overflow-y:auto;">
-  <div style="max-width:780px; margin:0 auto; background:linear-gradient(180deg, #fa243c, #0a0224); border:5px solid var(--neon-yellow); border-radius:12px; padding:32px; box-shadow:0 0 80px var(--chili-red-hot); text-align:center;">
-    <h2 style="font-family:'Press Start 2P', monospace; font-size:30px; color:var(--neon-yellow); text-shadow:4px 4px 0 #000, 0 0 20px var(--neon-yellow); letter-spacing:3px; margin-bottom:6px; animation: pulse 1.4s ease-in-out infinite;">⚔️ SUDDEN DEATH ⚔️</h2>
-    <p style="font-family:'Bebas Neue', sans-serif; font-size:24px; color:white; letter-spacing:3px; margin-bottom:18px;">★ FIRST TEAM TO ANSWER WINS ★</p>
-    <div id="sd-question-num" style="font-family:'Press Start 2P', monospace; font-size:14px; color:var(--neon-cyan); margin-bottom:14px; letter-spacing:1px;"></div>
-    <div id="sd-question" style="font-family:'Bebas Neue', sans-serif; font-size:36px; line-height:1.15; color:white; padding:22px 28px; background:rgba(0,0,0,0.55); border:3px solid var(--neon-yellow); border-radius:6px; margin-bottom:14px; letter-spacing:1px;"></div>
-    <div id="sd-answer" style="display:none; font-family:'Bebas Neue', sans-serif; font-size:30px; color:var(--neon-green); padding:14px 22px; background:rgba(57,255,20,0.18); border:3px dashed var(--neon-green); border-radius:6px; margin-bottom:18px;"></div>
-    <div id="sd-team-buttons" style="display:flex; flex-wrap:wrap; justify-content:center; margin-bottom:14px;"></div>
-    <div style="display:flex; gap:12px; justify-content:center;">
-      <button id="sd-reveal-btn" class="host-btn" onclick="suddenDeathRevealToggle()">REVEAL ANSWER</button>
-      <button class="host-btn" onclick="suddenDeathNext()">▶ NEXT TIE-BREAKER</button>
-    </div>
-  </div>
-</div>
-
 <!-- Round-end scoring panel -->
 <div id="scoring-panel" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.92); z-index:40; overflow-y:auto; padding:30px;">
   <div style="max-width:700px; margin:0 auto; background:linear-gradient(180deg, #1a0838, #0a0224); border:4px solid var(--neon-yellow); border-radius:10px; padding:32px; box-shadow:0 0 60px var(--neon-yellow);">
@@ -699,8 +663,8 @@
     <button id="play-btn" class="play-btn" onclick="togglePlay()" title="Play / Pause (M)">▶ PLAY A FEW NOTES</button>
     <div id="track-meta" style="font-family:'VT323', monospace; font-size:18px; color:rgba(255,248,231,0.6);"></div>
   </div>
-  <!-- Hidden audio element for music clips (no popup, no iframe) -->
-  <audio id="audio-player" preload="auto"></audio>
+  <!-- Hidden YouTube IFrame API player (1×1 pixel, audio-only mode) -->
+  <div id="yt-player" style="position:fixed; bottom:-1px; right:-1px; width:1px; height:1px; opacity:0; pointer-events:none;"></div>
   <div class="answer hidden" id="answer"></div>
 </div>
 
@@ -855,22 +819,6 @@ const ROUNDS = [
       },
     ],
   },
-];
-
-// ════════════════════════════════════════════════════════════════════
-//  SUDDEN DEATH TIE-BREAKERS
-//  Used only if top 2+ teams are tied after the Final Five.
-//  Quick verbal questions — first team to shout the right answer wins.
-// ════════════════════════════════════════════════════════════════════
-const TIE_BREAKERS = [
-  { q: "What year did the Berlin Wall fall?", a: "1989" },
-  { q: "What was the FIRST music video ever played on MTV (1981)?", a: "\"Video Killed the Radio Star\" — The Buggles" },
-  { q: "On Frasier, what was the name of the dad's Jack Russell terrier?", a: "Eddie" },
-  { q: "What was the highest-grossing movie of 1997?", a: "Titanic" },
-  { q: "In Saved By The Bell, what was the principal's name?", a: "Mr. Belding (Richard Belding)" },
-  { q: "What 1999 movie features the line \"I see dead people\"?", a: "The Sixth Sense" },
-  { q: "Which Spice Girl was nicknamed \"Posh\"?", a: "Victoria Beckham (Victoria Adams)" },
-  { q: "On Boy Meets World, what is the main character's first name?", a: "Cory (Matthews)" },
 ];
 
 // ════════════════════════════════════════════════════════════════════
@@ -1115,28 +1063,9 @@ function _advanceToNextRound() {
     state.showAnswer = false;
     state.phase = 'ask';   // reset phase for new round
     render();
-    // Brief round-intro splash for drama
-    showRoundIntro();
   } else {
     endGame();
   }
-}
-
-function showRoundIntro() {
-  const round = ROUNDS[state.roundIdx];
-  if (!round) return;
-  document.getElementById('round-intro-num').textContent =
-    `★ ROUND ${state.roundIdx + 1} OF ${ROUNDS.length} ★`;
-  document.getElementById('round-intro-name').textContent = round.name.toUpperCase();
-  document.getElementById('round-intro-sub').textContent = round.sub;
-  const intro = document.getElementById('round-intro');
-  intro.style.display = 'flex';
-  // Auto-dismiss after 4 seconds (or click/space to dismiss early)
-  setTimeout(hideRoundIntro, 4000);
-}
-
-function hideRoundIntro() {
-  document.getElementById('round-intro').style.display = 'none';
 }
 
 // ════════════════════════════════════════════════════════════════════
@@ -1233,105 +1162,35 @@ function removeTeam(idx) {
   render();
 }
 
-// ── SUDDEN DEATH MODAL ──
-let suddenDeathState = { tiedTeams: [], qIdx: 0, showAnswer: false };
-
-function openSuddenDeath(tiedTeams) {
-  suddenDeathState = { tiedTeams, qIdx: 0, showAnswer: false };
-  document.getElementById('sudden-death-panel').style.display = 'block';
-  renderSuddenDeath();
-}
-
-function renderSuddenDeath() {
-  const tb = TIE_BREAKERS[suddenDeathState.qIdx % TIE_BREAKERS.length];
-  document.getElementById('sd-question-num').textContent =
-    `★ TIE-BREAKER ${suddenDeathState.qIdx + 1} ★`;
-  document.getElementById('sd-question').textContent = tb.q;
-  const ansEl = document.getElementById('sd-answer');
-  ansEl.textContent = tb.a;
-  ansEl.style.display = suddenDeathState.showAnswer ? 'block' : 'none';
-  document.getElementById('sd-reveal-btn').textContent =
-    suddenDeathState.showAnswer ? 'HIDE' : 'REVEAL ANSWER';
-  // Render the tied team buttons
-  const teamsRow = document.getElementById('sd-team-buttons');
-  teamsRow.innerHTML = '';
-  suddenDeathState.tiedTeams.forEach(team => {
-    const btn = document.createElement('button');
-    btn.className = 'host-btn reveal';
-    btn.style.cssText = 'font-size:14px; padding:14px 22px; margin:6px;';
-    btn.textContent = `🏆 ${team.name} GOT IT`;
-    btn.onclick = () => suddenDeathWinner(team);
-    teamsRow.appendChild(btn);
-  });
-}
-
-function suddenDeathRevealToggle() {
-  suddenDeathState.showAnswer = !suddenDeathState.showAnswer;
-  renderSuddenDeath();
-}
-
-function suddenDeathNext() {
-  suddenDeathState.qIdx++;
-  suddenDeathState.showAnswer = false;
-  renderSuddenDeath();
-}
-
-function suddenDeathWinner(winnerTeam) {
-  // Bump the winner's score by +1 to break the tie
-  const idx = state.teams.findIndex(t => t.name === winnerTeam.name);
-  if (idx >= 0) state.teams[idx].score += 1;
-  document.getElementById('sudden-death-panel').style.display = 'none';
-  // Now run the regular endGame with the winner clearly established
-  _runEndGame();
-}
-
 // ── END / SUMMARY ──
 function endGame() {
-  const sorted = [...state.teams].sort((a, b) => b.score - a.score);
-  // ── Detect a tie at the top → fire sudden death first ──
-  if (sorted.length >= 2 && sorted[0].score === sorted[1].score && sorted[0].score > 0) {
-    const tied = sorted.filter(t => t.score === sorted[0].score);
-    openSuddenDeath(tied);
-    return;
-  }
-  _runEndGame();
-}
-
-function _runEndGame() {
   const sorted = [...state.teams].sort((a, b) => b.score - a.score);
   const winner = sorted[0];
   const splash = document.getElementById('splash');
   splash.innerHTML = `
-    <div class="chili-pepper-row">🎉 🌶️ 🎂 🌶️ 🍹 🌶️ 🎂 🌶️ 🎉</div>
-    <h1 style="font-size:32px;">★ POOL CHAMPION ★</h1>
-    <div class="happy-bday" style="font-size:80px; margin:12px 0;">${escapeHtml(winner ? winner.name : 'TIE')}</div>
-    <p style="font-size: 26px; color: var(--neon-yellow); letter-spacing:3px;">★ ${winner ? winner.score : 0} POINTS · CHAMPIONS OF THE 90s ★</p>
-    <div style="margin-top: 26px; font-family: 'Bebas Neue', sans-serif; font-size: 22px; max-width:500px;">
+    <div class="chili-pepper-row">🌶️ 🍹 🌶️ 🍹 🌶️</div>
+    <h1>★ FINAL STANDINGS ★</h1>
+    <div class="happy-bday">${escapeHtml(winner ? winner.name : 'TIE')}</div>
+    <p style="font-size: 28px; color: var(--neon-yellow); margin-top: 18px;">★ CHAMPIONS OF THE 90s ★</p>
+    <div style="margin-top: 24px; font-family: 'Bebas Neue', sans-serif; font-size: 26px;">
       ${sorted.map((t, i) =>
-        `<div style="margin: 4px 0; padding: 4px 14px; ${i === 0 ? 'color:var(--neon-yellow); font-size:26px;' : 'color:var(--paper);'}; ${i === 0 ? 'border:2px solid var(--neon-yellow); border-radius:4px;' : ''}">
-           ${i + 1}. ${escapeHtml(t.name)} — ${t.score} pts ${i === 0 ? '👑' : ''}
+        `<div style="margin: 6px 0; color: ${i === 0 ? 'var(--neon-yellow)' : 'var(--paper)'}">
+           ${i + 1}. ${escapeHtml(t.name)} — ${t.score} pts
          </div>`
       ).join('')}
     </div>
-    <div style="margin-top: 32px; padding: 22px 36px; border: 4px solid var(--chili-red-hot); border-radius: 8px; background: linear-gradient(135deg, rgba(214,40,40,0.25), rgba(255,45,146,0.25)); animation: pulse 2s ease-in-out infinite;">
-      <p style="font-family:'Press Start 2P',monospace; font-size:14px; color:var(--neon-yellow); letter-spacing:3px; margin-bottom:14px;">★ TONIGHT IS FOR ★</p>
-      <p style="font-family:'Bebas Neue',sans-serif; font-size: 64px; color: var(--neon-pink); text-shadow: 0 0 24px var(--neon-pink), 4px 4px 0 #000; letter-spacing:6px; line-height:1;">
-        🎂 HAPPY BIRTHDAY 🎂<br/>CAITLYN!
+    <div style="margin-top: 36px; padding: 18px 28px; border: 4px solid var(--chili-red-hot); border-radius: 8px; background: rgba(214, 40, 40, 0.18);">
+      <p style="font-size: 32px; color: var(--neon-pink); text-shadow: 0 0 16px var(--neon-pink);">
+        🎉 HAPPY BIRTHDAY CAITLYN 🎉
       </p>
-      <p style="font-size: 18px; color: var(--paper); margin-top: 12px; font-style: italic; letter-spacing:1px;">
+      <p style="font-size: 20px; color: var(--paper); margin-top: 8px; font-style: italic;">
         "It's the best little Chili's you've ever seen."
       </p>
-    </div>
-    <div style="margin-top:24px; font-family:'VT323',monospace; font-size:22px; color:rgba(255,255,255,0.6);">
-      🍹 NEXT UP: KARAOKE 🎤
     </div>
     <button class="start-btn" onclick="resetGame()">PLAY AGAIN 🌶️</button>
   `;
   splash.style.display = 'flex';
   fireConfetti();
-  // Fire confetti again at 3s and 6s for sustained celebration
-  setTimeout(fireConfetti, 3000);
-  setTimeout(fireConfetti, 6000);
 }
 
 // ── Party Deets toggle ──
@@ -1385,108 +1244,87 @@ function fireConfetti() {
 }
 
 // ════════════════════════════════════════════════════════════════════
-//  iTUNES PREVIEW PLAYER — hidden audio element, no popup, no iframe
-//  Plays a 30-sec preview clip for music questions during REVEAL phase.
+//  YOUTUBE PLAYER — hand-picked clip timestamps
+//  Each music question has a `yt: {id, start, end, fullStart}` field.
+//  Pre-reveal: plays start→end (intro snippet, no title spoiler).
+//  Post-reveal: plays from fullStart (chorus / iconic moment as celebration).
 // ════════════════════════════════════════════════════════════════════
 
-const previewCache = {};   // query → previewUrl
+let ytPlayer = null;
+let ytReady = false;
+let ytQueuedAction = null;  // function to run once API is ready
 
-async function fetchPreview(query) {
-  if (previewCache[query] !== undefined) return previewCache[query];
-  try {
-    const url = `https://itunes.apple.com/search?term=${encodeURIComponent(query)}&entity=song&limit=1`;
-    const r = await fetch(url);
-    const j = await r.json();
-    const preview = (j.results && j.results[0] && j.results[0].previewUrl) || null;
-    previewCache[query] = preview;
-    return preview;
-  } catch (e) {
-    previewCache[query] = null;
-    return null;
-  }
-}
+// Load the YouTube IFrame API
+const ytTag = document.createElement('script');
+ytTag.src = 'https://www.youtube.com/iframe_api';
+document.head.appendChild(ytTag);
 
-async function preloadAllPreviews() {
-  const queries = [];
-  ROUNDS.forEach(r => {
-    r.questions.forEach(q => {
-      if (q.am && !previewCache[q.am]) queries.push(q.am);
-    });
+window.onYouTubeIframeAPIReady = function() {
+  ytPlayer = new YT.Player('yt-player', {
+    height: '1', width: '1', videoId: '',
+    playerVars: {
+      autoplay: 0, controls: 0, disablekb: 1, fs: 0,
+      modestbranding: 1, rel: 0, playsinline: 1,
+    },
+    events: {
+      onReady: () => {
+        ytReady = true;
+        if (ytQueuedAction) { ytQueuedAction(); ytQueuedAction = null; }
+      },
+      onStateChange: (e) => {
+        const playBtn = document.getElementById('play-btn');
+        if (!playBtn) return;
+        if (e.data === YT.PlayerState.ENDED) {
+          playBtn.classList.remove('playing');
+          playBtn.textContent = state.showAnswer ? '▶ PLAY AGAIN' : '▶ PLAY A FEW NOTES';
+        } else if (e.data === YT.PlayerState.PLAYING) {
+          playBtn.classList.add('playing');
+          playBtn.textContent = '⏸ PAUSE';
+        } else if (e.data === YT.PlayerState.PAUSED) {
+          playBtn.classList.remove('playing');
+          playBtn.textContent = state.showAnswer ? '▶ PLAY THE SONG' : '▶ PLAY A FEW NOTES';
+        }
+      },
+    },
   });
-  const batchSize = 6;
-  for (let i = 0; i < queries.length; i += batchSize) {
-    await Promise.all(queries.slice(i, i + batchSize).map(fetchPreview));
-  }
-  console.log(`[trivia] preloaded ${Object.keys(previewCache).length} previews`);
-}
+};
 
-// Backward-compat helpers — still called from existing code paths
 function ytLoadAndPlay(yt, useFullStart) {
-  // Find the question matching this yt entry to get the `am` (Apple Music) query
-  const round = ROUNDS[state.roundIdx];
-  const q = round && round.questions[state.qIdx];
-  if (!q || !q.am) return;
-  const audioEl = document.getElementById('audio-player');
-  const playBtn = document.getElementById('play-btn');
-  const cached = previewCache[q.am];
-  const playUrl = (url) => {
-    if (!url) return;
-    audioEl.src = url;
-    audioEl.play().then(() => {
-      if (playBtn) {
-        playBtn.classList.add('playing');
-        playBtn.textContent = '⏸ PAUSE';
-      }
-    }).catch(err => {
-      console.warn('[trivia] audio play failed:', err);
-    });
-  };
-  if (cached) {
-    playUrl(cached);
-  } else {
-    fetchPreview(q.am).then(playUrl);
+  if (!ytReady) {
+    // API not ready yet — queue it
+    ytQueuedAction = () => ytLoadAndPlay(yt, useFullStart);
+    return;
   }
+  const startSec = useFullStart && yt.fullStart != null ? yt.fullStart : (yt.start || 0);
+  const endSec = useFullStart ? undefined : (yt.end || (startSec + 12));
+  const opts = { videoId: yt.id, startSeconds: startSec };
+  if (endSec) opts.endSeconds = endSec;
+  ytPlayer.loadVideoById(opts);
+  // loadVideoById auto-plays on most browsers; ensure it kicks off
+  setTimeout(() => { try { ytPlayer.playVideo(); } catch(e){} }, 100);
 }
 
 function ytStop() {
-  const audioEl = document.getElementById('audio-player');
-  if (audioEl && !audioEl.paused) {
-    audioEl.pause();
-    audioEl.currentTime = 0;
+  if (ytReady && ytPlayer && ytPlayer.stopVideo) {
+    try { ytPlayer.stopVideo(); } catch(e){}
   }
 }
 
 function togglePlay() {
   const round = ROUNDS[state.roundIdx];
   const q = round && round.questions[state.qIdx];
-  if (!q || !q.am) return;
-  const audioEl = document.getElementById('audio-player');
+  if (!q || !q.yt) return;
   const playBtn = document.getElementById('play-btn');
-  if (audioEl.paused) {
-    ytLoadAndPlay();
-  } else {
-    audioEl.pause();
-    if (playBtn) {
-      playBtn.classList.remove('playing');
-      playBtn.textContent = state.showAnswer ? '▶ PLAY THE SONG' : '▶ PLAY A FEW NOTES';
-    }
+  // If already playing → pause
+  if (ytReady && ytPlayer.getPlayerState && ytPlayer.getPlayerState() === 1) {
+    ytPlayer.pauseVideo();
+    return;
   }
+  // Otherwise load + play (use fullStart if answer is revealed)
+  ytLoadAndPlay(q.yt, state.showAnswer);
+  playBtn.classList.add('playing');
+  playBtn.textContent = '⏸ PAUSE';
 }
-
-// Reset button when audio finishes naturally
-document.addEventListener('DOMContentLoaded', () => {
-  const audioEl = document.getElementById('audio-player');
-  if (audioEl) {
-    audioEl.addEventListener('ended', () => {
-      const playBtn = document.getElementById('play-btn');
-      if (playBtn) {
-        playBtn.classList.remove('playing');
-        playBtn.textContent = state.showAnswer ? '▶ PLAY AGAIN' : '▶ PLAY A FEW NOTES';
-      }
-    });
-  }
-  preloadAllPreviews();
-});
 
 
 // ════════════════════════════════════════════════════════════════════
@@ -1500,15 +1338,7 @@ document.addEventListener('keydown', (e) => {
   }
   if (e.target.tagName === 'INPUT') return;
   // SPACE = next (in ask phase: next question · in reveal phase: next answer)
-  // Dismisses round-intro splash if visible
-  if (e.code === 'Space') {
-    e.preventDefault();
-    if (document.getElementById('round-intro').style.display === 'flex') {
-      hideRoundIntro();
-    } else {
-      nextQ();
-    }
-  }
+  if (e.code === 'Space') { e.preventDefault(); nextQ(); }
   else if (e.code === 'ArrowRight') nextQ();
   else if (e.code === 'ArrowLeft') prevQ();
   else if (e.key === 'n' || e.key === 'N') nextRound();
