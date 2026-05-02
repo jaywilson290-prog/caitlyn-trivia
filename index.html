@@ -717,8 +717,12 @@
     <button id="play-btn" class="play-btn" onclick="togglePlay()" title="Play / Pause (M)">▶ PLAY A FEW NOTES</button>
     <div id="track-meta" style="font-family:'VT323', monospace; font-size:18px; color:rgba(255,248,231,0.6);"></div>
   </div>
-  <!-- Hidden YouTube IFrame API player (1×1 pixel, audio-only mode) -->
-  <div id="yt-player" style="position:fixed; bottom:-1px; right:-1px; width:1px; height:1px; opacity:0; pointer-events:none;"></div>
+  <!-- YouTube IFrame API player — visible (small) so Chrome allows autoplay.
+       Sits in bottom-left corner above the scoreboard; host can also click
+       directly on the iframe's controls if needed. -->
+  <div id="yt-player-wrap" style="position:fixed; bottom:208px; left:8px; width:280px; height:160px; z-index:5; border:3px solid var(--neon-yellow); border-radius:6px; overflow:hidden; background:#000; box-shadow:0 0 20px rgba(255,230,0,0.5); display:none;">
+    <div id="yt-player" style="width:100%; height:100%;"></div>
+  </div>
   <div class="answer hidden" id="answer"></div>
 </div>
 
@@ -1420,15 +1424,19 @@ document.head.appendChild(ytTag);
 
 window.onYouTubeIframeAPIReady = function() {
   ytPlayer = new YT.Player('yt-player', {
-    height: '1', width: '1', videoId: '',
+    height: '160', width: '280', videoId: '',
     playerVars: {
-      autoplay: 0, controls: 0, disablekb: 1, fs: 0,
-      modestbranding: 1, rel: 0, playsinline: 1,
+      autoplay: 0, controls: 1, disablekb: 0, fs: 0,
+      modestbranding: 1, rel: 0, playsinline: 1, iv_load_policy: 3,
     },
     events: {
       onReady: () => {
         ytReady = true;
+        console.log('[trivia] YouTube player ready');
         if (ytQueuedAction) { ytQueuedAction(); ytQueuedAction = null; }
+      },
+      onError: (e) => {
+        console.warn('[trivia] YouTube player error:', e.data);
       },
       onStateChange: (e) => {
         const playBtn = document.getElementById('play-btn');
@@ -1450,7 +1458,7 @@ window.onYouTubeIframeAPIReady = function() {
 
 function ytLoadAndPlay(yt, useFullStart) {
   if (!ytReady) {
-    // API not ready yet — queue it
+    console.log('[trivia] YT API not ready, queuing');
     ytQueuedAction = () => ytLoadAndPlay(yt, useFullStart);
     return;
   }
@@ -1458,15 +1466,20 @@ function ytLoadAndPlay(yt, useFullStart) {
   const endSec = useFullStart ? undefined : (yt.end || (startSec + 12));
   const opts = { videoId: yt.id, startSeconds: startSec };
   if (endSec) opts.endSeconds = endSec;
+  console.log('[trivia] loadVideoById', opts);
+  // Show the wrapper now so the iframe is visible (Chrome autoplay rule)
+  const wrap = document.getElementById('yt-player-wrap');
+  if (wrap) wrap.style.display = 'block';
   ytPlayer.loadVideoById(opts);
-  // loadVideoById auto-plays on most browsers; ensure it kicks off
-  setTimeout(() => { try { ytPlayer.playVideo(); } catch(e){} }, 100);
 }
 
 function ytStop() {
   if (ytReady && ytPlayer && ytPlayer.stopVideo) {
     try { ytPlayer.stopVideo(); } catch(e){}
   }
+  // Hide the wrapper when not playing
+  const wrap = document.getElementById('yt-player-wrap');
+  if (wrap) wrap.style.display = 'none';
 }
 
 function togglePlay() {
