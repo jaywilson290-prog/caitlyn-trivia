@@ -663,10 +663,13 @@
     <button id="play-btn" class="play-btn" onclick="togglePlay()" title="Play / Pause (M)">▶ PLAY A FEW NOTES</button>
     <div id="track-meta" style="font-family:'VT323', monospace; font-size:18px; color:rgba(255,248,231,0.6);"></div>
   </div>
-  <!-- Hidden YouTube IFrame API player — 1px box. Plays ONLY on host's
-       button click (user gesture = browser allows hidden playback). No
-       autoplay, no popup. Hand-picked timestamps ensure non-spoiler intros. -->
-  <div id="yt-player" style="position:fixed; bottom:-1px; right:-1px; width:1px; height:1px; opacity:0; pointer-events:none; overflow:hidden;"></div>
+  <!-- Off-screen YouTube IFrame API player at REAL size (320×180).
+       Browsers refuse audio playback when iframe is "invisible" (1×1, opacity 0,
+       display:none) — so we keep it real-sized but positioned far off-screen.
+       Plays ONLY on host's button click (user gesture). No popup, no autoplay. -->
+  <div id="yt-player-wrap" style="position:fixed; left:-9999px; top:0; width:320px; height:180px; pointer-events:none; overflow:hidden;">
+    <div id="yt-player"></div>
+  </div>
   <div class="answer hidden" id="answer"></div>
 </div>
 
@@ -1245,13 +1248,14 @@ function fireConfetti() {
 // ════════════════════════════════════════════════════════════════════
 //  YOUTUBE PLAYER — hand-picked clip timestamps
 //  Each music question has a `yt: {id, start, end, fullStart}` field.
-//  Pre-reveal: plays start→end (intro snippet, no title spoiler).
-//  Post-reveal: plays from fullStart (chorus / iconic moment as celebration).
+//  ASK phase: plays start→end (intro snippet, no title spoiler).
+//  REVEAL phase: plays from fullStart (chorus / iconic moment as celebration).
+//  Plays only on host's button click (user gesture; required by browsers).
 // ════════════════════════════════════════════════════════════════════
 
 let ytPlayer = null;
 let ytReady = false;
-let ytQueuedAction = null;  // function to run once API is ready
+let ytQueuedAction = null;
 
 // Load the YouTube IFrame API
 const ytTag = document.createElement('script');
@@ -1259,48 +1263,63 @@ ytTag.src = 'https://www.youtube.com/iframe_api';
 document.head.appendChild(ytTag);
 
 window.onYouTubeIframeAPIReady = function() {
+  console.log('[trivia] YT IFrame API loaded — building player');
   ytPlayer = new YT.Player('yt-player', {
-    height: '1', width: '1', videoId: '',
+    height: '180', width: '320', videoId: '',
     playerVars: {
       autoplay: 0, controls: 0, disablekb: 1, fs: 0,
-      modestbranding: 1, rel: 0, playsinline: 1,
+      modestbranding: 1, rel: 0, playsinline: 1, iv_load_policy: 3,
     },
     events: {
       onReady: () => {
         ytReady = true;
+        console.log('[trivia] YT player ready');
         if (ytQueuedAction) { ytQueuedAction(); ytQueuedAction = null; }
+      },
+      onError: (e) => {
+        console.warn('[trivia] YT error code', e.data,
+          '— look up at developers.google.com/youtube/iframe_api_reference#onError');
       },
       onStateChange: (e) => {
         const playBtn = document.getElementById('play-btn');
         if (!playBtn) return;
+        const inReveal = state.phase === 'reveal';
         if (e.data === YT.PlayerState.ENDED) {
           playBtn.classList.remove('playing');
-          playBtn.textContent = state.showAnswer ? '▶ PLAY AGAIN' : '▶ PLAY A FEW NOTES';
+          playBtn.textContent = inReveal ? '▶ PLAY AGAIN' : '▶ PLAY A FEW NOTES';
         } else if (e.data === YT.PlayerState.PLAYING) {
           playBtn.classList.add('playing');
           playBtn.textContent = '⏸ PAUSE';
         } else if (e.data === YT.PlayerState.PAUSED) {
           playBtn.classList.remove('playing');
-          playBtn.textContent = state.showAnswer ? '▶ PLAY THE SONG' : '▶ PLAY A FEW NOTES';
+          playBtn.textContent = inReveal ? '▶ PLAY THE SONG' : '▶ PLAY A FEW NOTES';
         }
       },
     },
   });
 };
 
-function ytLoadAndPlay(yt, useFullStart) {
-  if (!ytReady) {
-    // API not ready yet — queue it
-    ytQueuedAction = () => ytLoadAndPlay(yt, useFullStart);
+function ytLoadAndPlay(yt) {
+  if (!yt || !yt.id) {
+    console.warn('[trivia] ytLoadAndPlay called without a valid yt config');
     return;
   }
-  const startSec = useFullStart && yt.fullStart != null ? yt.fullStart : (yt.start || 0);
-  const endSec = useFullStart ? undefined : (yt.end || (startSec + 12));
+  if (!ytReady) {
+    console.log('[trivia] YT API not ready yet, queuing playback');
+    ytQueuedAction = () => ytLoadAndPlay(yt);
+    return;
+  }
+  const inReveal = state.phase === 'reveal';
+  // REVEAL = chorus from fullStart. ASK = intro snippet start→end.
+  const startSec = inReveal && yt.fullStart != null
+    ? yt.fullStart
+    : (yt.start || 0);
+  const endSec = inReveal ? undefined : (yt.end || (startSec + 12));
   const opts = { videoId: yt.id, startSeconds: startSec };
-  if (endSec) opts.endSeconds = endSec;
+  if (endSec != null) opts.endSeconds = endSec;
+  console.log('[trivia] loadVideoById', opts);
+  // SYNCHRONOUS — preserves user-gesture chain (Safari requires this)
   ytPlayer.loadVideoById(opts);
-  // loadVideoById auto-plays on most browsers; ensure it kicks off
-  setTimeout(() => { try { ytPlayer.playVideo(); } catch(e){} }, 100);
 }
 
 function ytStop() {
@@ -1312,17 +1331,23 @@ function ytStop() {
 function togglePlay() {
   const round = ROUNDS[state.roundIdx];
   const q = round && round.questions[state.qIdx];
-  if (!q || !q.yt) return;
-  const playBtn = document.getElementById('play-btn');
-  // If already playing → pause
+  if (!q || !q.yt) {
+    console.log('[trivia] togglePlay: no music for this question');
+    return;
+  }
+  // Already playing → pause
   if (ytReady && ytPlayer.getPlayerState && ytPlayer.getPlayerState() === 1) {
+    console.log('[trivia] pausing');
     ytPlayer.pauseVideo();
     return;
   }
-  // Otherwise load + play (use fullStart if answer is revealed)
-  ytLoadAndPlay(q.yt, state.showAnswer);
-  playBtn.classList.add('playing');
-  playBtn.textContent = '⏸ PAUSE';
+  console.log('[trivia] play clicked, phase=' + state.phase);
+  ytLoadAndPlay(q.yt);
+  const playBtn = document.getElementById('play-btn');
+  if (playBtn) {
+    playBtn.classList.add('playing');
+    playBtn.textContent = '⏸ PAUSE';
+  }
 }
 
 
