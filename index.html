@@ -659,10 +659,17 @@
   <div class="q-counter" id="q-counter"></div>
   <div class="q-points" id="q-points"></div>
   <div class="q-prompt" id="q-prompt"></div>
-  <!-- Music removed from ASK phase: lyric is the question. Songs play on REVEAL. -->
-  <div id="player-row" style="display:none;"></div>
-  <!-- iTunes preview audio (used ONLY on the REVEAL summary page — NO ADS, no popup) -->
-  <audio id="preview-audio" preload="auto"></audio>
+  <div id="player-row" style="display:none; align-items:center; gap:14px; margin-bottom:18px;">
+    <button id="play-btn" class="play-btn" onclick="togglePlay()" title="Play / Pause (M)">▶ PLAY A FEW NOTES</button>
+    <div id="track-meta" style="font-family:'VT323', monospace; font-size:18px; color:rgba(255,248,231,0.6);"></div>
+  </div>
+  <!-- Off-screen YouTube IFrame API player at REAL size (320×180).
+       Browsers refuse audio playback when iframe is "invisible" (1×1, opacity 0,
+       display:none) — so we keep it real-sized but positioned far off-screen.
+       Plays ONLY on host's button click (user gesture). No popup, no autoplay. -->
+  <div id="yt-player-wrap" style="position:fixed; left:-9999px; top:0; width:320px; height:180px; pointer-events:none; overflow:hidden;">
+    <div id="yt-player"></div>
+  </div>
 
 <!-- REVEAL SUMMARY: shows ALL Q+A for the current round on one page -->
 <div id="reveal-summary" style="display:none; position:fixed; top:70px; bottom:200px; left:0; right:0; padding:20px 24px 16px; overflow-y:auto;">
@@ -927,11 +934,35 @@ function render() {
     const inReveal = state.phase === 'reveal';
     ansEl.classList.toggle('hidden', !inReveal);
 
-    // No music during ASK phase — the LYRIC PROMPT is the question.
-    // Songs play during REVEAL phase only (summary page) where the answer
-    // is already shown, so the chorus is the celebration, not a spoiler.
+    // Music questions get a YouTube clip player.
+    // PRE-REVEAL: plays a hand-picked NON-SPOILER intro snippet (start→end)
+    //             ONLY if defined. Round 2 has no intro = no pre-reveal clip.
+    // POST-REVEAL: plays from fullStart (chorus, celebration). All music
+    //             questions get a button to play.
+    // Music plays only when host clicks ▶ (user gesture; required by browsers
+    // to allow hidden-iframe playback).
     const playerRow = document.getElementById('player-row');
-    if (playerRow) playerRow.style.display = 'none';
+    const playBtn = document.getElementById('play-btn');
+    const trackMeta = document.getElementById('track-meta');
+    ytStop();
+    playBtn.classList.remove('playing');
+    playBtn.textContent = inReveal ? '▶ PLAY THE SONG' : '▶ PLAY A FEW NOTES';
+
+    const hasIntroClip = q.yt && q.yt.start != null && q.yt.end != null;
+    const hasFullClip  = q.yt && q.yt.fullStart != null;
+    const showInReveal = inReveal && (hasFullClip || hasIntroClip);
+    const showPreReveal = !inReveal && hasIntroClip;
+
+    if (showInReveal || showPreReveal) {
+      playerRow.style.display = 'flex';
+      if (inReveal) {
+        trackMeta.textContent = (q.am || '').toUpperCase();
+      } else {
+        trackMeta.textContent = `~${q.yt.end - q.yt.start} sec intro · no spoilers`;
+      }
+    } else {
+      playerRow.style.display = 'none';
+    }
   }
 
   renderTeams();
@@ -973,88 +1004,30 @@ function renderRevealSummary() {
     body.appendChild(aLine);
     card.appendChild(num);
     card.appendChild(body);
-    if (q.am) {
+    if (q.yt && q.yt.id) {
       const playBtn = document.createElement('button');
       playBtn.style.cssText = 'font-family:\'Press Start 2P\', monospace; font-size:11px; padding:10px 14px; background:linear-gradient(135deg,#39ff14,#00f0ff); color:#0a0224; border:3px solid white; border-radius:6px; cursor:pointer; flex-shrink:0; box-shadow:0 0 12px rgba(57,255,20,0.5);';
       playBtn.textContent = '▶ PLAY';
-      playBtn.onclick = () => playPreviewByQuery(q.am, playBtn);
+      playBtn.onclick = () => {
+        ytStop();
+        if (!ytReady) {
+          ytQueuedAction = () => playSongOnReveal(q.yt);
+          return;
+        }
+        playSongOnReveal(q.yt);
+      };
       card.appendChild(playBtn);
     }
     list.appendChild(card);
   });
 }
 
-// ── iTunes preview cache (used on REVEAL summary page — no ads) ──
-const previewCache = {};
-
-async function fetchITunesPreview(query) {
-  if (previewCache[query] !== undefined) return previewCache[query];
-  try {
-    const url = `https://itunes.apple.com/search?term=${encodeURIComponent(query)}&entity=song&limit=1`;
-    const r = await fetch(url);
-    const j = await r.json();
-    const preview = (j.results && j.results[0] && j.results[0].previewUrl) || null;
-    previewCache[query] = preview;
-    return preview;
-  } catch (e) {
-    previewCache[query] = null;
-    return null;
-  }
+function playSongOnReveal(yt) {
+  if (!ytReady || !ytPlayer) return;
+  const startSec = yt.fullStart != null ? yt.fullStart : (yt.start || 0);
+  ytPlayer.loadVideoById({ videoId: yt.id, startSeconds: startSec });
+  console.log('[trivia] reveal-page play', yt.id, 'from', startSec);
 }
-
-async function preloadAllPreviews() {
-  const queries = [];
-  ROUNDS.forEach(r => r.questions.forEach(q => {
-    if (q.am && previewCache[q.am] === undefined) queries.push(q.am);
-  }));
-  for (let i = 0; i < queries.length; i += 6) {
-    await Promise.all(queries.slice(i, i + 6).map(fetchITunesPreview));
-  }
-  console.log('[trivia] preloaded', Object.keys(previewCache).length, 'iTunes previews');
-}
-
-function playPreviewByQuery(query, btn) {
-  ytStop();
-  const audioEl = document.getElementById('preview-audio');
-  if (!audioEl) return;
-  // Toggle: if same source already playing, pause
-  if (!audioEl.paused && audioEl.dataset.q === query) {
-    audioEl.pause();
-    audioEl.currentTime = 0;
-    if (btn) btn.textContent = '▶ PLAY';
-    return;
-  }
-  // Stop anything else
-  audioEl.pause();
-  audioEl.currentTime = 0;
-  document.querySelectorAll('#reveal-list button').forEach(b => b.textContent = '▶ PLAY');
-  audioEl.dataset.q = query;
-  const playUrl = (url) => {
-    if (!url) {
-      console.warn('[trivia] no iTunes preview for:', query);
-      if (btn) btn.textContent = '— N/A —';
-      return;
-    }
-    audioEl.src = url;
-    audioEl.play().then(() => {
-      if (btn) btn.textContent = '⏸ PAUSE';
-    }).catch(err => console.warn('[trivia] preview play failed:', err));
-  };
-  const cached = previewCache[query];
-  if (cached !== undefined) playUrl(cached);
-  else fetchITunesPreview(query).then(playUrl);
-}
-
-// Reset reveal play buttons when audio ends naturally
-document.addEventListener('DOMContentLoaded', () => {
-  const audioEl = document.getElementById('preview-audio');
-  if (audioEl) {
-    audioEl.addEventListener('ended', () => {
-      document.querySelectorAll('#reveal-list button').forEach(b => b.textContent = '▶ PLAY');
-    });
-  }
-  preloadAllPreviews();
-});
 
 function renderTeams() {
   const container = document.getElementById('teams');
@@ -1344,23 +1317,110 @@ function fireConfetti() {
 }
 
 // ════════════════════════════════════════════════════════════════════
-//  MUSIC PLAYBACK — iTunes preview only (NO ADS, no popup, no iframe).
-//  Music plays ONLY on the REVEAL summary page, where answers are already
-//  shown — so the chorus is the celebration moment, not a spoiler.
-//  ASK phase has NO music (the lyric prompt is the question).
+//  YOUTUBE PLAYER — hand-picked clip timestamps
+//  Each music question has a `yt: {id, start, end, fullStart}` field.
+//  ASK phase: plays start→end (intro snippet, no title spoiler).
+//  REVEAL phase: plays from fullStart (chorus / iconic moment as celebration).
+//  Plays only on host's button click (user gesture; required by browsers).
 // ════════════════════════════════════════════════════════════════════
 
-// Stub YouTube globals so any leftover references no-op cleanly
 let ytPlayer = null;
 let ytReady = false;
 let ytQueuedAction = null;
-function ytStop() {
-  const a = document.getElementById('preview-audio');
-  if (a) { try { a.pause(); a.currentTime = 0; } catch(e){} }
+
+// Load the YouTube IFrame API
+const ytTag = document.createElement('script');
+ytTag.src = 'https://www.youtube.com/iframe_api';
+document.head.appendChild(ytTag);
+
+window.onYouTubeIframeAPIReady = function() {
+  console.log('[trivia] YT IFrame API loaded — building player');
+  ytPlayer = new YT.Player('yt-player', {
+    host: 'https://www.youtube-nocookie.com',  // privacy-enhanced + fewer ads
+    height: '180', width: '320', videoId: '',
+    playerVars: {
+      autoplay: 0, controls: 0, disablekb: 1, fs: 0,
+      modestbranding: 1, rel: 0, playsinline: 1, iv_load_policy: 3,
+    },
+    events: {
+      onReady: () => {
+        ytReady = true;
+        console.log('[trivia] YT player ready');
+        if (ytQueuedAction) { ytQueuedAction(); ytQueuedAction = null; }
+      },
+      onError: (e) => {
+        console.warn('[trivia] YT error code', e.data,
+          '— look up at developers.google.com/youtube/iframe_api_reference#onError');
+      },
+      onStateChange: (e) => {
+        const playBtn = document.getElementById('play-btn');
+        if (!playBtn) return;
+        const inReveal = state.phase === 'reveal';
+        if (e.data === YT.PlayerState.ENDED) {
+          playBtn.classList.remove('playing');
+          playBtn.textContent = inReveal ? '▶ PLAY AGAIN' : '▶ PLAY A FEW NOTES';
+        } else if (e.data === YT.PlayerState.PLAYING) {
+          playBtn.classList.add('playing');
+          playBtn.textContent = '⏸ PAUSE';
+        } else if (e.data === YT.PlayerState.PAUSED) {
+          playBtn.classList.remove('playing');
+          playBtn.textContent = inReveal ? '▶ PLAY THE SONG' : '▶ PLAY A FEW NOTES';
+        }
+      },
+    },
+  });
+};
+
+function ytLoadAndPlay(yt) {
+  if (!yt || !yt.id) {
+    console.warn('[trivia] ytLoadAndPlay called without a valid yt config');
+    return;
+  }
+  if (!ytReady) {
+    console.log('[trivia] YT API not ready yet, queuing playback');
+    ytQueuedAction = () => ytLoadAndPlay(yt);
+    return;
+  }
+  const inReveal = state.phase === 'reveal';
+  // REVEAL = chorus from fullStart. ASK = intro snippet start→end.
+  const startSec = inReveal && yt.fullStart != null
+    ? yt.fullStart
+    : (yt.start || 0);
+  const endSec = inReveal ? undefined : (yt.end || (startSec + 12));
+  const opts = { videoId: yt.id, startSeconds: startSec };
+  if (endSec != null) opts.endSeconds = endSec;
+  console.log('[trivia] loadVideoById', opts);
+  // SYNCHRONOUS — preserves user-gesture chain (Safari requires this)
+  ytPlayer.loadVideoById(opts);
 }
 
-// (No YouTube IFrame API. iTunes preview only.)
-function togglePlay() { /* no-op — music is REVEAL-only */ }
+function ytStop() {
+  if (ytReady && ytPlayer && ytPlayer.stopVideo) {
+    try { ytPlayer.stopVideo(); } catch(e){}
+  }
+}
+
+function togglePlay() {
+  const round = ROUNDS[state.roundIdx];
+  const q = round && round.questions[state.qIdx];
+  if (!q || !q.yt) {
+    console.log('[trivia] togglePlay: no music for this question');
+    return;
+  }
+  // Already playing → pause
+  if (ytReady && ytPlayer.getPlayerState && ytPlayer.getPlayerState() === 1) {
+    console.log('[trivia] pausing');
+    ytPlayer.pauseVideo();
+    return;
+  }
+  console.log('[trivia] play clicked, phase=' + state.phase);
+  ytLoadAndPlay(q.yt);
+  const playBtn = document.getElementById('play-btn');
+  if (playBtn) {
+    playBtn.classList.add('playing');
+    playBtn.textContent = '⏸ PAUSE';
+  }
+}
 
 
 // ════════════════════════════════════════════════════════════════════
