@@ -87,47 +87,19 @@
   }
 
   /* ─── MAIN STAGE ─── */
+  /* Buttons are now BELOW (above scoreboard), so stage is full-width.
+     Reserve bottom space for the host-controls bar (~70px). */
   .stage {
     position: fixed;
     top: 70px;
-    bottom: 200px;
-    left: 160px;       /* clear the round-tabs column on the left */
-    right: 200px;      /* clear the host-controls column on the right */
+    bottom: 280px;       /* scoreboard 200 + controls 70 + gap */
+    left: 0; right: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     padding: 24px;
     text-align: center;
-  }
-  /* Narrow / portrait screens (Pi TV): stack controls top/bottom, give stage full width */
-  @media (max-width: 900px), (orientation: portrait) {
-    .stage { left: 0; right: 0; padding: 20px 12px; }
-    .host-controls {
-      top: 76px;
-      right: 8px;
-      flex-direction: row !important;
-      flex-wrap: wrap;
-      gap: 4px;
-      max-width: 50%;
-      justify-content: flex-end;
-    }
-    .host-controls .host-btn {
-      font-size: 10px !important;
-      padding: 6px 8px !important;
-    }
-    .round-tabs {
-      top: 76px;
-      left: 8px;
-      flex-direction: row !important;
-      flex-wrap: wrap;
-      gap: 4px;
-    }
-    .round-tabs .round-tab {
-      font-size: 9px !important;
-      padding: 5px 7px !important;
-      min-width: 38px !important;
-    }
   }
 
   .round-title {
@@ -338,29 +310,39 @@
   }
   .add-team:hover { background: rgba(255, 230, 0, 0.15); }
 
-  /* ─── HOST CONTROLS (top right) ─── */
+  /* ─── HOST CONTROLS (centered horizontal bar, BELOW the stage) ─── */
   .host-controls {
     position: fixed;
-    top: 80px;
-    right: 16px;
+    bottom: 210px;          /* above the scoreboard */
+    left: 50%;
+    transform: translateX(-50%);
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
     gap: 8px;
     z-index: 9;
+    background: rgba(0, 0, 0, 0.6);
+    padding: 8px 14px;
+    border: 2px solid rgba(255, 230, 0, 0.4);
+    border-radius: 8px;
+    backdrop-filter: blur(4px);
+    max-width: calc(100% - 32px);
   }
   .host-btn {
     font-family: 'Press Start 2P', monospace;
-    font-size: 12px;
-    padding: 12px 16px;
+    font-size: 11px;
+    padding: 10px 14px;
     background: black;
     color: var(--neon-yellow);
-    border: 3px solid var(--neon-yellow);
+    border: 2px solid var(--neon-yellow);
     cursor: pointer;
     border-radius: 4px;
     text-shadow: 0 0 6px var(--neon-yellow);
-    box-shadow: 0 0 10px rgba(255, 230, 0, 0.5);
+    box-shadow: 0 0 8px rgba(255, 230, 0, 0.4);
     text-transform: uppercase;
     letter-spacing: 1px;
+    white-space: nowrap;
   }
   .host-btn:hover { background: var(--neon-yellow); color: black; }
   .host-btn.reveal { color: var(--neon-green); border-color: var(--neon-green); text-shadow: 0 0 6px var(--neon-green); box-shadow: 0 0 10px rgba(57, 255, 20, 0.5); }
@@ -368,27 +350,27 @@
   .host-btn.danger { color: var(--neon-pink); border-color: var(--neon-pink); text-shadow: 0 0 6px var(--neon-pink); }
   .host-btn.danger:hover { background: var(--neon-pink); color: black; }
 
-  /* ─── ROUND PICKER (top-left tabs) ─── */
+  /* ─── ROUND PICKER (compact horizontal at bottom-right) ─── */
   .round-tabs {
     position: fixed;
-    top: 80px;
-    left: 16px;
+    bottom: 210px;
+    right: 12px;
     display: flex;
-    flex-direction: column;
-    gap: 6px;
+    flex-direction: row;
+    gap: 4px;
     z-index: 9;
   }
   .round-tab {
     font-family: 'Press Start 2P', monospace;
-    font-size: 11px;
-    padding: 8px 12px;
+    font-size: 9px;
+    padding: 6px 8px;
     background: rgba(0, 0, 0, 0.6);
     color: white;
     border: 2px solid var(--neon-cyan);
     cursor: pointer;
     border-radius: 4px;
-    min-width: 120px;
-    text-align: left;
+    min-width: 36px;
+    text-align: center;
     letter-spacing: 1px;
   }
   .round-tab.active {
@@ -717,12 +699,8 @@
     <button id="play-btn" class="play-btn" onclick="togglePlay()" title="Play / Pause (M)">▶ PLAY A FEW NOTES</button>
     <div id="track-meta" style="font-family:'VT323', monospace; font-size:18px; color:rgba(255,248,231,0.6);"></div>
   </div>
-  <!-- YouTube IFrame API player — visible (small) so Chrome allows autoplay.
-       Sits in bottom-left corner above the scoreboard; host can also click
-       directly on the iframe's controls if needed. -->
-  <div id="yt-player-wrap" style="position:fixed; bottom:208px; left:8px; width:280px; height:160px; z-index:5; border:3px solid var(--neon-yellow); border-radius:6px; overflow:hidden; background:#000; box-shadow:0 0 20px rgba(255,230,0,0.5); display:none;">
-    <div id="yt-player" style="width:100%; height:100%;"></div>
-  </div>
+  <!-- Hidden audio element for music clips (no popup, no iframe) -->
+  <audio id="audio-player" preload="auto"></audio>
   <div class="answer hidden" id="answer"></div>
 </div>
 
@@ -1407,96 +1385,108 @@ function fireConfetti() {
 }
 
 // ════════════════════════════════════════════════════════════════════
-//  YOUTUBE PLAYER — hand-picked clip timestamps
-//  Each music question has a `yt: {id, start, end, fullStart}` field.
-//  Pre-reveal: plays start→end (intro snippet, no title spoiler).
-//  Post-reveal: plays from fullStart (chorus / iconic moment as celebration).
+//  iTUNES PREVIEW PLAYER — hidden audio element, no popup, no iframe
+//  Plays a 30-sec preview clip for music questions during REVEAL phase.
 // ════════════════════════════════════════════════════════════════════
 
-let ytPlayer = null;
-let ytReady = false;
-let ytQueuedAction = null;  // function to run once API is ready
+const previewCache = {};   // query → previewUrl
 
-// Load the YouTube IFrame API
-const ytTag = document.createElement('script');
-ytTag.src = 'https://www.youtube.com/iframe_api';
-document.head.appendChild(ytTag);
-
-window.onYouTubeIframeAPIReady = function() {
-  ytPlayer = new YT.Player('yt-player', {
-    height: '160', width: '280', videoId: '',
-    playerVars: {
-      autoplay: 0, controls: 1, disablekb: 0, fs: 0,
-      modestbranding: 1, rel: 0, playsinline: 1, iv_load_policy: 3,
-    },
-    events: {
-      onReady: () => {
-        ytReady = true;
-        console.log('[trivia] YouTube player ready');
-        if (ytQueuedAction) { ytQueuedAction(); ytQueuedAction = null; }
-      },
-      onError: (e) => {
-        console.warn('[trivia] YouTube player error:', e.data);
-      },
-      onStateChange: (e) => {
-        const playBtn = document.getElementById('play-btn');
-        if (!playBtn) return;
-        if (e.data === YT.PlayerState.ENDED) {
-          playBtn.classList.remove('playing');
-          playBtn.textContent = state.showAnswer ? '▶ PLAY AGAIN' : '▶ PLAY A FEW NOTES';
-        } else if (e.data === YT.PlayerState.PLAYING) {
-          playBtn.classList.add('playing');
-          playBtn.textContent = '⏸ PAUSE';
-        } else if (e.data === YT.PlayerState.PAUSED) {
-          playBtn.classList.remove('playing');
-          playBtn.textContent = state.showAnswer ? '▶ PLAY THE SONG' : '▶ PLAY A FEW NOTES';
-        }
-      },
-    },
-  });
-};
-
-function ytLoadAndPlay(yt, useFullStart) {
-  if (!ytReady) {
-    console.log('[trivia] YT API not ready, queuing');
-    ytQueuedAction = () => ytLoadAndPlay(yt, useFullStart);
-    return;
+async function fetchPreview(query) {
+  if (previewCache[query] !== undefined) return previewCache[query];
+  try {
+    const url = `https://itunes.apple.com/search?term=${encodeURIComponent(query)}&entity=song&limit=1`;
+    const r = await fetch(url);
+    const j = await r.json();
+    const preview = (j.results && j.results[0] && j.results[0].previewUrl) || null;
+    previewCache[query] = preview;
+    return preview;
+  } catch (e) {
+    previewCache[query] = null;
+    return null;
   }
-  const startSec = useFullStart && yt.fullStart != null ? yt.fullStart : (yt.start || 0);
-  const endSec = useFullStart ? undefined : (yt.end || (startSec + 12));
-  const opts = { videoId: yt.id, startSeconds: startSec };
-  if (endSec) opts.endSeconds = endSec;
-  console.log('[trivia] loadVideoById', opts);
-  // Show the wrapper now so the iframe is visible (Chrome autoplay rule)
-  const wrap = document.getElementById('yt-player-wrap');
-  if (wrap) wrap.style.display = 'block';
-  ytPlayer.loadVideoById(opts);
+}
+
+async function preloadAllPreviews() {
+  const queries = [];
+  ROUNDS.forEach(r => {
+    r.questions.forEach(q => {
+      if (q.am && !previewCache[q.am]) queries.push(q.am);
+    });
+  });
+  const batchSize = 6;
+  for (let i = 0; i < queries.length; i += batchSize) {
+    await Promise.all(queries.slice(i, i + batchSize).map(fetchPreview));
+  }
+  console.log(`[trivia] preloaded ${Object.keys(previewCache).length} previews`);
+}
+
+// Backward-compat helpers — still called from existing code paths
+function ytLoadAndPlay(yt, useFullStart) {
+  // Find the question matching this yt entry to get the `am` (Apple Music) query
+  const round = ROUNDS[state.roundIdx];
+  const q = round && round.questions[state.qIdx];
+  if (!q || !q.am) return;
+  const audioEl = document.getElementById('audio-player');
+  const playBtn = document.getElementById('play-btn');
+  const cached = previewCache[q.am];
+  const playUrl = (url) => {
+    if (!url) return;
+    audioEl.src = url;
+    audioEl.play().then(() => {
+      if (playBtn) {
+        playBtn.classList.add('playing');
+        playBtn.textContent = '⏸ PAUSE';
+      }
+    }).catch(err => {
+      console.warn('[trivia] audio play failed:', err);
+    });
+  };
+  if (cached) {
+    playUrl(cached);
+  } else {
+    fetchPreview(q.am).then(playUrl);
+  }
 }
 
 function ytStop() {
-  if (ytReady && ytPlayer && ytPlayer.stopVideo) {
-    try { ytPlayer.stopVideo(); } catch(e){}
+  const audioEl = document.getElementById('audio-player');
+  if (audioEl && !audioEl.paused) {
+    audioEl.pause();
+    audioEl.currentTime = 0;
   }
-  // Hide the wrapper when not playing
-  const wrap = document.getElementById('yt-player-wrap');
-  if (wrap) wrap.style.display = 'none';
 }
 
 function togglePlay() {
   const round = ROUNDS[state.roundIdx];
   const q = round && round.questions[state.qIdx];
-  if (!q || !q.yt) return;
+  if (!q || !q.am) return;
+  const audioEl = document.getElementById('audio-player');
   const playBtn = document.getElementById('play-btn');
-  // If already playing → pause
-  if (ytReady && ytPlayer.getPlayerState && ytPlayer.getPlayerState() === 1) {
-    ytPlayer.pauseVideo();
-    return;
+  if (audioEl.paused) {
+    ytLoadAndPlay();
+  } else {
+    audioEl.pause();
+    if (playBtn) {
+      playBtn.classList.remove('playing');
+      playBtn.textContent = state.showAnswer ? '▶ PLAY THE SONG' : '▶ PLAY A FEW NOTES';
+    }
   }
-  // Otherwise load + play (use fullStart if answer is revealed)
-  ytLoadAndPlay(q.yt, state.showAnswer);
-  playBtn.classList.add('playing');
-  playBtn.textContent = '⏸ PAUSE';
 }
+
+// Reset button when audio finishes naturally
+document.addEventListener('DOMContentLoaded', () => {
+  const audioEl = document.getElementById('audio-player');
+  if (audioEl) {
+    audioEl.addEventListener('ended', () => {
+      const playBtn = document.getElementById('play-btn');
+      if (playBtn) {
+        playBtn.classList.remove('playing');
+        playBtn.textContent = state.showAnswer ? '▶ PLAY AGAIN' : '▶ PLAY A FEW NOTES';
+      }
+    });
+  }
+  preloadAllPreviews();
+});
 
 
 // ════════════════════════════════════════════════════════════════════
