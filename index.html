@@ -876,12 +876,17 @@ function render() {
   if (!round) { return endGame(); }
   const q = round.questions[state.qIdx];
 
-  document.getElementById('round-badge').textContent =
-    `ROUND ${state.roundIdx + 1} / ${ROUNDS.length}` +
-    (state.phase === 'reveal' ? ' · REVEAL' : '');
+  const rb = document.getElementById('round-badge');
+  rb.textContent = state.phase === 'reveal'
+    ? `★ R${state.roundIdx + 1} REVEAL ★`
+    : `ROUND ${state.roundIdx + 1} / ${ROUNDS.length}`;
+  rb.style.background = state.phase === 'reveal' ? 'var(--neon-green)' : 'black';
+  rb.style.color = state.phase === 'reveal' ? '#0a0224' : 'var(--neon-yellow)';
   document.getElementById('round-title').textContent = round.name;
   document.getElementById('round-sub').textContent =
-    state.phase === 'reveal' ? '★ ANSWERS REVEAL ★' : round.sub;
+    state.phase === 'reveal'
+      ? `★ ANSWER ${state.qIdx + 1} OF ${round.questions.length} ★`
+      : round.sub;
 
   // Counter shows phase + position
   const phaseLabel = state.phase === 'reveal' ? '★ REVEAL ★' : (round.isFinalFive ? '★ FINAL FIVE ★' : 'Q');
@@ -901,8 +906,9 @@ function render() {
     const ansEl = document.getElementById('answer');
     ansEl.textContent = q.a;
     ansEl.style.whiteSpace = 'pre-wrap';
-    // Answer visibility is driven by phase OR explicit showAnswer toggle
-    const inReveal = state.phase === 'reveal' || state.showAnswer;
+    // Answer visibility is driven by phase ONLY (no per-question reveal).
+    // ASK phase = answer hidden, REVEAL phase = answer visible.
+    const inReveal = state.phase === 'reveal';
     ansEl.classList.toggle('hidden', !inReveal);
 
     // Music questions get a YouTube clip player.
@@ -1126,12 +1132,8 @@ function applyRoundScores() {
   _advanceToNextRound();
 }
 
-function toggleAnswer() {
-  state.showAnswer = !state.showAnswer;
-  // Stop any current playback when navigating; host re-clicks ▶ to play
-  ytStop();
-  render();
-}
+// (toggleAnswer removed — per-question reveals are gone. Use ★ REVEAL ANSWERS ★
+//  button or finish the last ASK question to enter REVEAL phase.)
 
 function adjustScore(idx, delta) {
   state.teams[idx].score += delta;
