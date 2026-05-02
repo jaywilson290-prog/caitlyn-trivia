@@ -140,36 +140,7 @@
     letter-spacing: 1.2px;
   }
 
-  .apple-music-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    font-family: 'Press Start 2P', monospace;
-    font-size: 14px;
-    padding: 14px 22px;
-    background: linear-gradient(135deg, #fa243c, #ff5773);
-    color: white;
-    border: 3px solid #fff;
-    border-radius: 6px;
-    cursor: pointer;
-    margin-bottom: 18px;
-    text-decoration: none;
-    box-shadow: 0 0 16px rgba(250, 36, 60, 0.8);
-    text-shadow: 1px 1px 0 #000;
-    letter-spacing: 1px;
-    transition: transform 0.15s;
-  }
-  .apple-music-btn:hover {
-    transform: scale(1.05);
-    box-shadow: 0 0 28px rgba(250, 36, 60, 1);
-  }
-  .apple-music-btn::before {
-    content: "♫";
-    font-size: 22px;
-    color: white;
-  }
-
-  /* Inline 30-second clip play button (iTunes preview) */
+  /* Inline clip play button (iTunes preview, plays as REVEAL celebration) */
   .play-btn {
     font-family: 'Press Start 2P', monospace;
     font-size: 16px;
@@ -898,7 +869,9 @@ function render() {
     ansEl.style.whiteSpace = 'pre-wrap';
     ansEl.classList.toggle('hidden', !state.showAnswer);
 
-    // Music questions get an inline clip player
+    // Music questions: clip is the REVEAL CELEBRATION, not a hint.
+    // Apple's 30s previews always pick the chorus = usually the title,
+    // so we ONLY show the player after the answer is revealed.
     const playerRow = document.getElementById('player-row');
     const playBtn = document.getElementById('play-btn');
     const trackMeta = document.getElementById('track-meta');
@@ -907,14 +880,11 @@ function render() {
     audioEl.pause();
     audioEl.currentTime = 0;
     playBtn.classList.remove('playing');
-    playBtn.textContent = '▶ PLAY CLIP';
+    playBtn.textContent = '▶ PLAY THE SONG';
 
-    if (q.am) {
+    if (q.am && state.showAnswer) {
       playerRow.style.display = 'flex';
-      // Show track name only AFTER the answer is revealed (don't spoil!)
-      trackMeta.textContent = state.showAnswer
-        ? q.am.toUpperCase()
-        : 'Stop anytime · or hit SPACE to reveal';
+      trackMeta.textContent = q.am.toUpperCase();
       const cached = previewCache[q.am];
       if (cached) {
         audioEl.src = cached;
@@ -1097,13 +1067,28 @@ function applyRoundScores() {
 
 function toggleAnswer() {
   state.showAnswer = !state.showAnswer;
-  // Reveal answer = teams already shouted, kill the music
   const audioEl = document.getElementById('audio-player');
   if (audioEl && !audioEl.paused) {
     audioEl.pause();
     audioEl.currentTime = 0;
   }
   render();
+  // If we just revealed the answer to a music question, auto-play the clip
+  // as the celebration moment. Wait a tick for the player to render.
+  const round = ROUNDS[state.roundIdx];
+  const q = round && round.questions[state.qIdx];
+  if (state.showAnswer && q && q.am) {
+    setTimeout(() => {
+      const a = document.getElementById('audio-player');
+      const btn = document.getElementById('play-btn');
+      if (a && a.src && !btn.disabled) {
+        a.play().then(() => {
+          btn.classList.add('playing');
+          btn.textContent = '⏸ PAUSE';
+        }).catch(() => {/* browser blocked autoplay, that's fine */});
+      }
+    }, 300);
+  }
 }
 
 function adjustScore(idx, delta) {
