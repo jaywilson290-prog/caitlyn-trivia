@@ -869,9 +869,11 @@ function render() {
     ansEl.style.whiteSpace = 'pre-wrap';
     ansEl.classList.toggle('hidden', !state.showAnswer);
 
-    // Music questions: clip is the REVEAL CELEBRATION, not a hint.
-    // Apple's 30s previews always pick the chorus = usually the title,
-    // so we ONLY show the player after the answer is revealed.
+    // Music questions: clip player visible always so you can play a
+    // few notes WITH the lyric (classic "Name That Song"). Apple's
+    // 30s previews are the chorus though, so use your discretion —
+    // some songs the chorus = the title (spoiler), others the snippet
+    // is iconic intro/verse. Host has the pause button.
     const playerRow = document.getElementById('player-row');
     const playBtn = document.getElementById('play-btn');
     const trackMeta = document.getElementById('track-meta');
@@ -880,11 +882,13 @@ function render() {
     audioEl.pause();
     audioEl.currentTime = 0;
     playBtn.classList.remove('playing');
-    playBtn.textContent = '▶ PLAY THE SONG';
+    playBtn.textContent = state.showAnswer ? '▶ PLAY THE SONG' : '▶ PLAY A FEW NOTES';
 
-    if (q.am && state.showAnswer) {
+    if (q.am) {
       playerRow.style.display = 'flex';
-      trackMeta.textContent = q.am.toUpperCase();
+      trackMeta.textContent = state.showAnswer
+        ? q.am.toUpperCase()
+        : '⚠ may include chorus — pause early if it spoils';
       const cached = previewCache[q.am];
       if (cached) {
         audioEl.src = cached;
