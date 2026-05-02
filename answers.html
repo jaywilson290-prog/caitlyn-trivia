@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>🌶️ Team Answer Sheet · Caitlyn's Trivia</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=Bebas+Neue&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #fff8e7;
+    color: #0a0224;
+    padding: 18px 24px;
+    max-width: 1100px;
+    margin: 0 auto;
+    font-size: 13px;
+  }
+
+  /* Print-friendly button — visible on screen, hidden when printing */
+  .print-bar {
+    position: sticky;
+    top: 0;
+    background: #fff8e7;
+    padding: 8px 0 12px;
+    margin-bottom: 8px;
+    z-index: 10;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px dashed #fa243c;
+  }
+  .print-bar button {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 12px;
+    padding: 10px 18px;
+    background: #fa243c;
+    color: white;
+    border: 3px solid #0a0224;
+    border-radius: 4px;
+    cursor: pointer;
+    letter-spacing: 1px;
+  }
+  .print-bar button:hover { background: #0a0224; }
+  .print-bar .info { font-size: 13px; color: #555; }
+
+  .header {
+    text-align: center;
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 4px double #0a0224;
+  }
+  .header h1 {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 18px;
+    color: #fa243c;
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+  }
+  .header .sub {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    color: #0a0224;
+    letter-spacing: 4px;
+  }
+  .header .meta {
+    font-size: 11px;
+    color: #666;
+    margin-top: 4px;
+  }
+
+  .team-name-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+    padding: 10px 14px;
+    border: 2px solid #0a0224;
+    background: rgba(250, 36, 60, 0.1);
+  }
+  .team-name-row label {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 11px;
+    letter-spacing: 1px;
+  }
+  .team-name-row .line {
+    flex: 1;
+    border-bottom: 2px solid #0a0224;
+    height: 28px;
+  }
+
+  /* 2-column layout for compact printing */
+  .columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px 24px;
+  }
+
+  .round-block {
+    break-inside: avoid;
+    page-break-inside: avoid;
+    border: 2px solid #0a0224;
+    padding: 10px 14px 12px;
+    margin-bottom: 10px;
+    background: white;
+  }
+  .round-block .round-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    border-bottom: 2px dashed #fa243c;
+    padding-bottom: 5px;
+    margin-bottom: 8px;
+  }
+  .round-block .round-head .name {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 11px;
+    color: #fa243c;
+    letter-spacing: 0.5px;
+  }
+  .round-block .round-head .pts {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 9px;
+    color: #555;
+  }
+
+  .answer-line {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 0;
+    border-bottom: 1px solid #ccc;
+  }
+  .answer-line:last-of-type { border-bottom: none; }
+  .answer-line .num {
+    font-weight: 700;
+    font-size: 12px;
+    color: #fa243c;
+    min-width: 20px;
+    text-align: right;
+  }
+  .answer-line .pts-tag {
+    font-size: 10px;
+    color: #888;
+    min-width: 36px;
+  }
+  .answer-line .blank {
+    flex: 1;
+    min-height: 22px;
+  }
+  .answer-line .check {
+    width: 22px;
+    height: 22px;
+    border: 1.5px solid #888;
+    border-radius: 3px;
+  }
+
+  .round-total {
+    margin-top: 8px;
+    padding-top: 6px;
+    border-top: 2px solid #0a0224;
+    display: flex;
+    justify-content: space-between;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 9px;
+  }
+  .round-total .total-box {
+    border: 2px solid #0a0224;
+    padding: 2px 14px;
+    min-width: 60px;
+    text-align: right;
+  }
+
+  .footer {
+    margin-top: 18px;
+    text-align: center;
+    border-top: 4px double #0a0224;
+    padding-top: 10px;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 10px;
+  }
+  .grand-total {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 18px;
+    border: 3px solid #fa243c;
+    background: rgba(250, 36, 60, 0.08);
+  }
+  .grand-total .label { color: #fa243c; }
+  .grand-total .box {
+    border: 2px solid #0a0224;
+    padding: 4px 18px;
+    min-width: 80px;
+    text-align: right;
+    font-size: 14px;
+  }
+
+  @media print {
+    @page { margin: 0.4in; size: letter; }
+    body { padding: 0; max-width: none; font-size: 12px; }
+    .print-bar { display: none; }
+    .header h1 { color: #fa243c !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .round-block .round-head .name { color: #fa243c !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .round-block .round-head { border-color: #fa243c !important; }
+    .answer-line .num { color: #fa243c !important; }
+    .grand-total { background: rgba(250,36,60,0.05) !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .grand-total .label { color: #fa243c !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="print-bar">
+  <div>
+    <button onclick="window.print()">🖨️ PRINT — ONE PER TEAM</button>
+  </div>
+  <div class="info">
+    Tip: Print 4–6 copies (one per team). Cmd+P (Mac) / Ctrl+P (PC).
+  </div>
+</div>
+
+<div class="header">
+  <h1>🌶️ CAITLYN'S 80s/90s THROWBACK TRIVIA 🌶️</h1>
+  <div class="sub">★ TEAM ANSWER SHEET ★</div>
+  <div class="meta">Saturday May 2 · Wilson Residence · 95 PTS POSSIBLE</div>
+</div>
+
+<div class="team-name-row">
+  <label>TEAM NAME:</label>
+  <div class="line"></div>
+</div>
+
+<div class="columns">
+
+  <!-- ROUND 1 -->
+  <div class="round-block">
+    <div class="round-head">
+      <span class="name">🎵 ROUND 1: NAME THAT SONG</span>
+      <span class="pts">2 PTS EACH · MAX 20</span>
+    </div>
+    <div class="answer-line"><span class="num">1.</span><span class="pts-tag">[2pt]</span><span class="blank"></span><span class="check"></span></div>
+    <div class="answer-line"><span class="num">2.</span><span class="pts-tag">[2pt]</span><span class="blank"></span><span class="check"></span></div>
+    <div class="answer-line"><span class="num">3.</span><span class="pts-tag">[2pt]</span><span class="blank"></span><span class="check"></span></div>
+    <div class="answer-line"><span class="num">4.</span><span class="pts-tag">[2pt]</span><span class="blank"></span><span class="check"></span></div>
+    <div class="answer-line"><span class="num">5.</span><span class="pts-tag">[2pt]</span><span class="blank"></span><span class="check"></span></div>
+    <div class="answer-line"><span class="num">6.</span><span class="pts-tag">[2pt]</span><span class="blank"></span><span class="check"></span></div>
+    <div class="answer-line"><span class="num">7.</span><span class="pts-tag">[2pt]</span><span class="blank"></span><span class="check"></span></div>
+    <div class="answer-line"><span class="num">8.</span><span class="pts-tag">[2pt]</span><span class="blank"></span><span class="check"></span></div>
+    <div class="answer-line"><span class="num">9.</span><span class="pts-tag">[2pt]</span><span class="blank"></span><span class="check"></span></div>
+    <div class="answer-line"><span class="num">10.</span><span class="pts-tag">[2pt]</span><span class="blank"></span><span class="check"></span></div>
+    <div class="round-total"><span>R1 TOTAL</span><span class="total-box">/ 20</span></div>
+  </div>
+
+  <!-- ROUND 2 -->
+  <div class="round-block">
+    <div class="round-head">
+      <span class="name">🎤 ROUND 2: FINISH THE LYRIC</span>
+      <span class="pts">2 PTS EACH · MAX 16</span>
+    </div>
+    <div class="answer-line"><span class="num">1.</span><span class="pts-tag">[2pt]</span><span class="blank"></span><span class="check"></span></div>
+    <div class="answer-line"><span class="num">2.</span><span class="pts-tag">[2pt]</span><span class="blank"></span><span class="check"></span></div>
+    <div class="answer-line"><span class="num">3.</span><span class="pts-tag">[2pt]</span><span class="blank"></span><span class="check"></span></div>
+    <div class="answer-line"><span class="num">4.</span><span class="pts-tag">[2pt]</span><span class="blank"></span><span class="check"></span></div>
+    <div class="answer-line"><span class="num">5.</span><span class="pts-tag">[2pt]</span><span class="blank"></span><span class="check"></span></div>
+    <div class="answer-line"><span class="num">6.</span><span class="pts-tag">[2pt]</span><span class="blank"></span><span class="check"></span></div>
+    <div class="answer-line"><span class="num">7.</span><span class="pts-tag">[2pt]</span><span class="blank"></span><span class="check"></span></div>
+    <div class="answer-line"><span class="num">8.</span><span class="pts-tag">[2pt]</span><span class="blank"></span><span class="check"></span></div>
+    <div class="round-total"><span>R2 TOTAL</span><span class="total-box">/ 16</span></div>
+  </div>
+
+  <!-- ROUND 3 -->
+  <div class="round-block">
+    <div class="round-head">
+      <span class="name">📺 ROUND 3: FRIENDS + 90s TV</span>
+      <span class="pts">1–2 PTS · MAX 15</span>
+    </div>
+    <div class="answer-line"><span class="num">1.</span><span class="pts-tag">[2pt★]</span><span class="blank"></span><span class="check"></span></div>
+    <div class="answer-line"><span class="num">2.</span><span class="pts-tag">[1pt]</span><span class="blank"></span><span class="check"></span></div>
+    <div class="answer-line"><span class="num">3.</span><span class="pts-tag">[1pt]</span><span class="blank"></span><span class="check"></span></div>
+    <div class="answer-line"><span class="num">4.</span><span class="pts-tag">[1pt]</span><span class="blank"></span><span class="check"></span></div>
+    <div class="answer-line"><span class="num">5.</span><span class="pts-tag">[1pt]</span><span class="blank"></span><span class="check"></span></div>
+    <div class="answer-line"><span class="num">6.</span><span class="pts-tag">[2pt★]</span><span class="blank"></span><span class="check"></span></div>
+    <div class="answer-line"><span class="num">7.</span><span class="pts-tag">[1pt]</span><span class="blank"></span><span class="check"></span></div>
+    <div class="answer-line"><span class="num">8.</span><span class="pts-tag">[1pt]</span><span class="blank"></span><span class="check"></span></div>
+    <div class="answer-line"><span class="num">9.</span><span class="pts-tag">[2pt★]</span><span class="blank"></span><span class="check"></span></div>
+    <div class="answer-line"><span class="num">10.</span><span class="pts-tag">[1pt]</span><span class="blank"></span><span class="check"></span></div>
+    <div class="answer-line"><span class="num">11.</span><span class="pts-tag">[1pt]</span><span class="blank"></span><span class="check"></span></div>
+    <div class="answer-line"><span class="num">12.</span><span class="pts-tag">[1pt]</span><span class="blank"></span><span class="check"></span></div>
+    <div class="answer-line"><span class="num">13.</span><span class="pts-tag">[1pt]</span><span class="blank"></span><span class="check"></span></div>
+    <div class="round-total"><span>R3 TOTAL</span><span class="total-box">/ 15</span></div>
+  </div>
+
+  <!-- ROUND 4 -->
+  <div class="round-block">
+    <div class="round-head">
+      <span class="name">⚡ ROUND 4: RAPID FIRE</span>
+      <span class="pts">1 PT EACH · MAX 8</span>
+    </div>
+    <div class="answer-line"><span class="num">1.</span><span class="pts-tag">[1pt]</span><span class="blank"></span><span class="check"></span></div>
+    <div class="answer-line"><span class="num">2.</span><span class="pts-tag">[1pt]</span><span class="blank"></span><span class="check"></span></div>
+    <div class="answer-line"><span class="num">3.</span><span class="pts-tag">[1pt]</span><span class="blank"></span><span class="check"></span></div>
+    <div class="answer-line"><span class="num">4.</span><span class="pts-tag">[1pt]</span><span class="blank"></span><span class="check"></span></div>
+    <div class="answer-line"><span class="num">5.</span><span class="pts-tag">[1pt]</span><span class="blank"></span><span class="check"></span></div>
+    <div class="answer-line"><span class="num">6.</span><span class="pts-tag">[1pt]</span><span class="blank"></span><span class="check"></span></div>
+    <div class="answer-line"><span class="num">7.</span><span class="pts-tag">[1pt]</span><span class="blank"></span><span class="check"></span></div>
+    <div class="answer-line"><span class="num">8.</span><span class="pts-tag">[1pt]</span><span class="blank"></span><span class="check"></span></div>
+    <div class="round-total"><span>R4 TOTAL</span><span class="total-box">/ 8</span></div>
+  </div>
+
+  <!-- ROUND 5 -->
+  <div class="round-block">
+    <div class="round-head">
+      <span class="name">🎧 ROUND 5: WHO AM I?</span>
+      <span class="pts">2 PTS EACH · MAX 16</span>
+    </div>
+    <div class="answer-line"><span class="num">1.</span><span class="pts-tag">[2pt]</span><span class="blank"></span><span class="check"></span></div>
+    <div class="answer-line"><span class="num">2.</span><span class="pts-tag">[2pt]</span><span class="blank"></span><span class="check"></span></div>
+    <div class="answer-line"><span class="num">3.</span><span class="pts-tag">[2pt]</span><span class="blank"></span><span class="check"></span></div>
+    <div class="answer-line"><span class="num">4.</span><span class="pts-tag">[2pt]</span><span class="blank"></span><span class="check"></span></div>
+    <div class="answer-line"><span class="num">5.</span><span class="pts-tag">[2pt]</span><span class="blank"></span><span class="check"></span></div>
+    <div class="answer-line"><span class="num">6.</span><span class="pts-tag">[2pt]</span><span class="blank"></span><span class="check"></span></div>
+    <div class="answer-line"><span class="num">7.</span><span class="pts-tag">[2pt]</span><span class="blank"></span><span class="check"></span></div>
+    <div class="answer-line"><span class="num">8.</span><span class="pts-tag">[2pt]</span><span class="blank"></span><span class="check"></span></div>
+    <div class="round-total"><span>R5 TOTAL</span><span class="total-box">/ 16</span></div>
+  </div>
+
+  <!-- FINAL FIVE -->
+  <div class="round-block" style="border-color:#fa243c; border-width:3px;">
+    <div class="round-head">
+      <span class="name">🏆 THE FINAL FIVE — DOUBLE STAKES</span>
+      <span class="pts">4 PTS EACH · MAX 20</span>
+    </div>
+    <div class="answer-line"><span class="num">1.</span><span class="pts-tag">[4pt]</span><span class="blank"></span><span class="check"></span></div>
+    <div class="answer-line"><span class="num">2.</span><span class="pts-tag">[4pt]</span><span class="blank"></span><span class="check"></span></div>
+    <div class="answer-line"><span class="num">3.</span><span class="pts-tag">[4pt]</span><span class="blank"></span><span class="check"></span></div>
+    <div class="answer-line"><span class="num">4.</span><span class="pts-tag">[4pt]</span><span class="blank"></span><span class="check"></span></div>
+    <div class="answer-line"><span class="num">5.</span><span class="pts-tag">[4pt]</span><span class="blank"></span><span class="check"></span></div>
+    <div class="round-total"><span>FINAL TOTAL</span><span class="total-box">/ 20</span></div>
+  </div>
+
+</div>
+
+<div class="footer">
+  <div class="grand-total">
+    <span class="label">★ GRAND TOTAL</span>
+    <span class="box">/ 95</span>
+  </div>
+  <p style="margin-top:10px; font-family:'VT323',monospace; font-size:14px; color:#666; letter-spacing:1px;">
+    🌶️ HAPPY BIRTHDAY CAITLYN · MAY 2 🌶️
+  </p>
+</div>
+
+</body>
+</html>
