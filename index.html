@@ -169,6 +169,43 @@
     color: white;
   }
 
+  /* Inline 30-second clip play button (iTunes preview) */
+  .play-btn {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 16px;
+    padding: 18px 30px;
+    background: linear-gradient(135deg, #39ff14, #00f0ff);
+    color: #0a0224;
+    border: 4px solid white;
+    border-radius: 8px;
+    cursor: pointer;
+    text-shadow: 1px 1px 0 rgba(255,255,255,0.4);
+    box-shadow: 0 0 24px rgba(57, 255, 20, 0.7);
+    letter-spacing: 1px;
+    transition: transform 0.12s, box-shadow 0.12s;
+  }
+  .play-btn:hover {
+    transform: scale(1.04);
+    box-shadow: 0 0 36px rgba(57, 255, 20, 1);
+  }
+  .play-btn.playing {
+    background: linear-gradient(135deg, #ff2d92, #b561ff);
+    color: white;
+    text-shadow: 1px 1px 0 #000;
+    animation: pulse 1.2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 24px rgba(255, 45, 146, 0.6); }
+    50% { box-shadow: 0 0 40px rgba(255, 45, 146, 1); }
+  }
+  .play-btn.loading {
+    background: rgba(255, 255, 255, 0.15);
+    color: rgba(255, 255, 255, 0.5);
+    border-color: rgba(255, 255, 255, 0.3);
+    cursor: wait;
+    box-shadow: none;
+  }
+
   .q-points {
     font-family: 'Press Start 2P', monospace;
     font-size: 16px;
@@ -637,11 +674,16 @@
   <div class="q-counter" id="q-counter"></div>
   <div class="q-points" id="q-points"></div>
   <div class="q-prompt" id="q-prompt"></div>
-  <a id="apple-music-btn" class="apple-music-btn" target="_blank" rel="noopener" style="display:none;">PLAY ON APPLE MUSIC</a>
+  <div id="player-row" style="display:none; align-items:center; gap:14px; margin-bottom:18px;">
+    <button id="play-btn" class="play-btn" onclick="togglePlay()" title="Play / Pause (P)">▶ PLAY CLIP</button>
+    <div id="track-meta" style="font-family:'VT323', monospace; font-size:18px; color:rgba(255,248,231,0.6);"></div>
+    <a id="apple-music-btn" class="apple-music-btn" target="_blank" rel="noopener" style="display:none; margin:0;">♫ APPLE MUSIC</a>
+  </div>
+  <audio id="audio-player" preload="auto"></audio>
   <div class="answer hidden" id="answer"></div>
 </div>
 
-<div class="keyboard-hint">SPACE = reveal · ← → navigate · N = next round · T = add team · P = party deets</div>
+<div class="keyboard-hint">SPACE = reveal · ← → nav · N = next round · M = play music · T = add team · P = party deets</div>
 
 <!-- Scoreboard -->
 <div class="scoreboard">
@@ -843,16 +885,44 @@ function render() {
     ansEl.style.whiteSpace = 'pre-wrap';
     ansEl.classList.toggle('hidden', !state.showAnswer);
 
-    // Apple Music play button — only on music questions (those with `am`)
+    // Music questions get an inline 30s clip player
+    const playerRow = document.getElementById('player-row');
+    const playBtn = document.getElementById('play-btn');
+    const trackMeta = document.getElementById('track-meta');
     const amBtn = document.getElementById('apple-music-btn');
+    const audioEl = document.getElementById('audio-player');
+    // Stop any previous track when navigating
+    audioEl.pause();
+    audioEl.currentTime = 0;
+    playBtn.classList.remove('playing');
+    playBtn.textContent = '▶ PLAY CLIP';
+
     if (q.am) {
+      playerRow.style.display = 'flex';
       amBtn.href = 'https://music.apple.com/us/search?term=' + encodeURIComponent(q.am);
-      amBtn.textContent = state.showAnswer
-        ? `PLAY: ${q.am.toUpperCase()}`
-        : 'PLAY ON APPLE MUSIC';
       amBtn.style.display = 'inline-flex';
+      trackMeta.textContent = state.showAnswer ? q.am.toUpperCase() : '30-second preview';
+      // Hook up the audio source if pre-loaded, else lazy-fetch
+      const cached = previewCache[q.am];
+      if (cached) {
+        audioEl.src = cached;
+        playBtn.classList.remove('loading');
+        playBtn.disabled = false;
+      } else {
+        playBtn.classList.add('loading');
+        playBtn.disabled = true;
+        fetchPreview(q.am).then(url => {
+          if (url) {
+            audioEl.src = url;
+            playBtn.classList.remove('loading');
+            playBtn.disabled = false;
+          } else {
+            playBtn.textContent = '— PREVIEW UNAVAILABLE —';
+          }
+        });
+      }
     } else {
-      amBtn.style.display = 'none';
+      playerRow.style.display = 'none';
     }
   }
 
@@ -1064,6 +1134,76 @@ function fireConfetti() {
 }
 
 // ════════════════════════════════════════════════════════════════════
+//  iTUNES PREVIEW CLIPS — 30-second snippets, free, no API key
+// ════════════════════════════════════════════════════════════════════
+
+const previewCache = {};   // query → previewUrl
+
+async function fetchPreview(query) {
+  if (previewCache[query] !== undefined) return previewCache[query];
+  try {
+    const url = `https://itunes.apple.com/search?term=${encodeURIComponent(query)}&entity=song&limit=1`;
+    const r = await fetch(url);
+    const j = await r.json();
+    const preview = (j.results && j.results[0] && j.results[0].previewUrl) || null;
+    previewCache[query] = preview;
+    return preview;
+  } catch (e) {
+    previewCache[query] = null;
+    return null;
+  }
+}
+
+async function preloadAllPreviews() {
+  const queries = [];
+  ROUNDS.forEach(r => {
+    r.questions.forEach(q => {
+      if (q.am && !previewCache[q.am]) queries.push(q.am);
+    });
+  });
+  // Fetch in parallel with a polite cap of 6 at a time
+  const batchSize = 6;
+  for (let i = 0; i < queries.length; i += batchSize) {
+    await Promise.all(queries.slice(i, i + batchSize).map(fetchPreview));
+  }
+  console.log(`[trivia] preloaded ${Object.keys(previewCache).length} previews`);
+}
+
+function togglePlay() {
+  const audioEl = document.getElementById('audio-player');
+  const playBtn = document.getElementById('play-btn');
+  if (!audioEl.src || playBtn.disabled) return;
+  if (audioEl.paused) {
+    audioEl.play().then(() => {
+      playBtn.classList.add('playing');
+      playBtn.textContent = '⏸ PAUSE';
+    }).catch(err => {
+      console.warn('Play failed:', err);
+      playBtn.textContent = '— PLAY BLOCKED —';
+    });
+  } else {
+    audioEl.pause();
+    playBtn.classList.remove('playing');
+    playBtn.textContent = '▶ PLAY CLIP';
+  }
+}
+
+// Reset button when audio finishes naturally
+document.addEventListener('DOMContentLoaded', () => {
+  const audioEl = document.getElementById('audio-player');
+  if (audioEl) {
+    audioEl.addEventListener('ended', () => {
+      const playBtn = document.getElementById('play-btn');
+      playBtn.classList.remove('playing');
+      playBtn.textContent = '▶ PLAY AGAIN';
+    });
+  }
+  // Kick off preloading in the background
+  preloadAllPreviews();
+});
+
+
+// ════════════════════════════════════════════════════════════════════
 //  KEYBOARD
 // ════════════════════════════════════════════════════════════════════
 
@@ -1080,6 +1220,7 @@ document.addEventListener('keydown', (e) => {
   else if (e.key === 't' || e.key === 'T') addTeam();
   else if (e.key === 'r' || e.key === 'R') resetGame();
   else if (e.key === 'p' || e.key === 'P') toggleDeets();
+  else if (e.key === 'm' || e.key === 'M') togglePlay();
 });
 
 // ════════════════════════════════════════════════════════════════════
